@@ -8,9 +8,6 @@ import android.graphics.Rect;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by User on 10.11.2015.
- */
 public class Sprite {
     private Bitmap bitmap;
 
@@ -50,7 +47,7 @@ public class Sprite {
         this.bitmap = bitmap;
 
         this.timeForCurrentFrame = 0.0;
-        this.frameTime = 25;
+        this.frameTime = 50;
         this.currentFrame = 0;
 
         this.frameWidth = initialFrame.width();

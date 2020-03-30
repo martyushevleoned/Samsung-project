@@ -16,13 +16,14 @@ import java.util.Random;
 public class GameView extends View {
 
     public static int score = 0;
-    private Sprite playerBird;
+    private Sprite flappy;
     private Wall tube1;
     private Wall tube2;
 
     private int viewWidth;
     private int viewHeight;
-    private Boolean crash;
+    private Boolean crash = false;
+    private Boolean tubeCrash = false;
     Bitmap bird;
     Bitmap downTube;
     Bitmap upTube;
@@ -31,59 +32,15 @@ public class GameView extends View {
     private int groundX = 0;
     private int groundVX = -10;
     private int groundHeight = 100;
+    private int measurement = 5;
 
     private final int timerInterval = 15;
 
     public GameView(Context context) {
         super(context);
 
-        Random rnd = new Random();
-
-        int r = rnd.nextInt(2);
-        switch (r) {
-            case (0):
-                fon = BitmapFactory.decodeResource(getResources(), R.drawable.lightfon);
-                break;
-            case (1):
-                fon = BitmapFactory.decodeResource(getResources(), R.drawable.darkfon);
-                break;
-        }
-
-        r = rnd.nextInt(2);
-        switch (r) {
-            case (0):
-                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.downtube);
-                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.uptube);
-                break;
-            case (1):
-                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.reddowntube);
-                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.reduptube);
-                break;
-        }
-
-        tube1 = new Wall(525, 750, downTube.getWidth(), 250, 1500, -10, downTube, upTube, upTube.getHeight(),groundHeight);
-        tube2 = new Wall(525, 750, downTube.getWidth(), 250, 1500 * 3 / 2, -10, downTube, upTube, upTube.getHeight(),groundHeight);
-
-        r = rnd.nextInt(3);
-
-        switch (r) {
-            case (0):
-                bird = BitmapFactory.decodeResource(getResources(), R.drawable.ybird);
-                break;
-            case (1):
-                bird = BitmapFactory.decodeResource(getResources(), R.drawable.rbird);
-                break;
-            default:
-                bird = BitmapFactory.decodeResource(getResources(), R.drawable.bbird);
-                break;
-        }
-
-        int w = bird.getWidth() / 3;
-        int h = bird.getHeight();
-        Rect firstFrame = new Rect(0, 0, w, h);
-        playerBird = new Sprite(200, 0, 0, 100, firstFrame, bird);
-        playerBird.addFrame(new Rect(w, 0, w * 2, h));
-        playerBird.addFrame(new Rect(w * 2, 0, w * 3, h));
+        changeImagines();
+        restart();
 
         Timer t = new Timer();
         t.start();
@@ -103,9 +60,10 @@ public class GameView extends View {
         drawFon(canvas);
         tube1.draw(canvas, getHeight(), crash);
         tube2.draw(canvas, getHeight(), crash);
-        playerBird.draw(canvas);
+        flappy.draw(canvas);
         drawScore(canvas, score);
         drawGround(canvas);
+        crashCheck();
     }
 
     protected void drawScore(Canvas canvas, int score) {
@@ -131,44 +89,101 @@ public class GameView extends View {
         Paint p = new Paint();
         canvas.drawBitmap(ground, groundX, getHeight() - groundHeight, p);
         canvas.drawBitmap(ground, groundX + ground.getWidth(), getHeight() - groundHeight, p);
-        groundX += groundVX;
-        if (-groundX > ground.getWidth()) groundX += ground.getWidth();
+        if(!tubeCrash) {
+            groundX += groundVX;
+            if (-groundX > ground.getWidth()) groundX += ground.getWidth();
+        }
     }
 
     protected void update() {
-        playerBird.update(timerInterval);
-        crash = false;
 
-        tube1.update(getWidth(), getHeight());
-        tube2.update(getWidth(), getHeight());
+        flappy.update(timerInterval);
 
-        if (playerBird.getY() + playerBird.getFrameHeight() > viewHeight - groundHeight) {
-            playerBird.setY(viewHeight - playerBird.getFrameHeight() - groundHeight);
-            playerBird.setVy(0);
-            crash = true;
+        if(!tubeCrash) {
+            tube1.update(getWidth(), getHeight());
+            tube2.update(getWidth(), getHeight());
         }
-        if (playerBird.getY() < 0) {
-            playerBird.setY(0);
-            playerBird.setVy(0);
+
+        if (flappy.getY() + flappy.getFrameHeight() > viewHeight - groundHeight) {
+            flappy.setY(viewHeight - flappy.getFrameHeight() - groundHeight);
+            flappy.setVy(0);
             crash = true;
         }
 
-        if (lose(playerBird.getX(),
-                playerBird.getY()))
-            crash = true;
-        if (lose(playerBird.getX() + playerBird.getFrameWidth(),
-                playerBird.getY()))
-            crash = true;
-        if (lose(playerBird.getX(),
-                playerBird.getY() + playerBird.getFrameHeight()))
-            crash = true;
-        if (lose(playerBird.getX() + playerBird.getFrameWidth(),
-                playerBird.getY() + playerBird.getFrameHeight()))
-            crash = true;
-
-        if (crash) score = 0;
+        if (lose(flappy.getX() + measurement,
+                flappy.getY() + measurement))
+            tubeCrash = true;
+        if (lose(flappy.getX() + flappy.getFrameWidth() - measurement,
+                flappy.getY() + measurement))
+            tubeCrash = true;
+        if (lose(flappy.getX() + measurement,
+                flappy.getY() + flappy.getFrameHeight() - measurement))
+            tubeCrash = true;
+        if (lose(flappy.getX() + flappy.getFrameWidth() - measurement,
+                flappy.getY() + flappy.getFrameHeight() - measurement))
+            tubeCrash = true;
 
         invalidate();
+    }
+
+    protected void restart() {
+        tube1.setX(1500);
+        tube2.setX(1500 * 3 / 2);
+        flappy.setY((float) (viewHeight + flappy.getFrameHeight()) / 2);
+    }
+
+    protected void crashCheck() {
+        if (crash) {
+            score = 0;
+            restart();
+            changeImagines();
+            crash = false;
+            tubeCrash = false;
+        }
+    }
+
+    protected void changeImagines() {
+        Random rnd = new Random();
+        int r = rnd.nextInt(3);
+        switch (r) {
+            case (0):
+                bird = BitmapFactory.decodeResource(getResources(), R.drawable.ybird);
+                break;
+            case (1):
+                bird = BitmapFactory.decodeResource(getResources(), R.drawable.rbird);
+                break;
+            default:
+                bird = BitmapFactory.decodeResource(getResources(), R.drawable.bbird);
+                break;
+        }
+        r = rnd.nextInt(2);
+        switch (r) {
+            case (0):
+                fon = BitmapFactory.decodeResource(getResources(), R.drawable.lightfon);
+                break;
+            default:
+                fon = BitmapFactory.decodeResource(getResources(), R.drawable.darkfon);
+                break;
+        }
+        r = rnd.nextInt(2);
+        switch (r) {
+            case (0):
+                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.downtube);
+                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.uptube);
+                break;
+            default:
+                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.reddowntube);
+                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.reduptube);
+                break;
+        }
+        tube1 = new Wall(525, 750, downTube.getWidth(), 250, 1500, -10, downTube, upTube, upTube.getHeight(), groundHeight);
+        tube2 = new Wall(525, 750, downTube.getWidth(), 250, 1500 * 3 / 2, -10, downTube, upTube, upTube.getHeight(), groundHeight);
+        int w = bird.getWidth() / 3;
+        int h = bird.getHeight();
+        Rect firstFrame = new Rect(0, 0, w, h);
+        flappy = new Sprite(200, 500, 0, 0, firstFrame, bird);
+        flappy.addFrame(new Rect(w, 0, w * 2, h));
+        flappy.addFrame(new Rect(w * 2, 0, w * 3, h));
     }
 
     protected boolean lose(double x, double y) {
@@ -185,8 +200,8 @@ public class GameView extends View {
 
         int eventAction = event.getAction();
         if (eventAction == MotionEvent.ACTION_DOWN) {
-            playerBird.setVy(-25);
-
+            if(!tubeCrash)
+            flappy.setVy(-25);
         }
         return true;
     }

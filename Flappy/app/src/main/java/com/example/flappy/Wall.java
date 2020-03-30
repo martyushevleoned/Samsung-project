@@ -64,6 +64,10 @@ public class Wall {
         this.x = x;
     }
 
+    public void setVX(int vx) {
+        this.vx = vx;
+    }
+
     public void update(int w, int h) {
         x += vx;
         if (x + width < 0) {
