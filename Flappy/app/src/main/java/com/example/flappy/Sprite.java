@@ -25,12 +25,12 @@ public class Sprite {
     private double vx;
     private double vy;
 
-    public Sprite(double x,
-                  double y,
-                  double vx,
-                  double vy,
-                  Rect initialFrame,
-                  Bitmap bitmap) {
+    Sprite(double x,
+           double y,
+           double vx,
+           double vy,
+           Rect initialFrame,
+           Bitmap bitmap) {
 
         this.x = x;
         this.y = y;
@@ -52,40 +52,40 @@ public class Sprite {
         this.frameHeight = initialFrame.height();
     }
 
-    public double getX() {
+    double getX() {
         return x;
     }
 
-    public double getY() {
+    double getY() {
         return y;
     }
 
-    public void setY(double y) {
+    void setY(double y) {
         this.y = y;
     }
 
-    public int getFrameWidth() {
+    int getFrameWidth() {
         return frameWidth;
     }
 
-    public int getFrameHeight() {
+    int getFrameHeight() {
         return frameHeight;
     }
 
-    public void setVy(double vy) {
+    void setVy(double vy) {
         this.vy = vy;
     }
 
-    public void addFrame(Rect frame) {
+    void addFrame(Rect frame) {
         frames.add(frame);
     }
 
-    public void setNextFrame() {
+    private void setNextFrame() {
         currentFrame += 1;
         currentFrame %= frames.size();
     }
 
-    public void update(int ms, Boolean crash, Boolean tubeCrash) {
+    void update(int ms, Boolean crash, Boolean tubeCrash) {
         timeForCurrentFrame += ms;
         if (timeForCurrentFrame >= frameTime) {
             if (!tubeCrash && !crash) setNextFrame();
@@ -104,7 +104,7 @@ public class Sprite {
         canvas.drawCircle((float) (x + frameWidth), (float) (y + frameHeight), 5, p);
     }
 
-    public void draw(Canvas canvas) {
+    void draw(Canvas canvas) {
         Paint p = new Paint();
 
         double angle = vy / g * 2;

@@ -21,16 +21,16 @@ public class Wall {
     private int hTube;
     private int groundHeight;
 
-    public Wall(int emptySpace,
-                int height,
-                int width,
-                int indent,
-                int x,
-                int vx,
-                Bitmap downTube,
-                Bitmap upTube,
-                int hTube,
-                int groundHeight) {
+    Wall(int emptySpace,
+         int height,
+         int width,
+         int indent,
+         int x,
+         int vx,
+         Bitmap downTube,
+         Bitmap upTube,
+         int hTube,
+         int groundHeight) {
 
         this.x = x;
         this.vx = vx;
@@ -44,27 +44,27 @@ public class Wall {
         this.groundHeight = groundHeight;
     }
 
-    public int getX() {
+    int getX() {
         return x;
     }
 
-    public int getEdge() {
+    int getEdge() {
         return x + width;
     }
 
-    public int getUpTube() {
+    int getUpTube() {
         return height;
     }
 
-    public int getDownTube() {
+    int getDownTube() {
         return height + emptySpace;
     }
 
-    public void setX(int x) {
+    void setX(int x) {
         this.x = x;
     }
 
-    public void update(int w, int h) {
+    void update(int w, int h) {
         x += vx;
         if (x + width < 0) {
             x = 1500 - width;
@@ -85,7 +85,7 @@ public class Wall {
         canvas.drawRect(x, height + emptySpace, x + width, h, p);
     }
 
-    public void draw(Canvas canvas, int h, Boolean crash) {
+    void draw(Canvas canvas, int h, Boolean crash) {
         Paint p = new Paint();
 
         //drawHitBox(canvas, h, crash);
@@ -94,7 +94,7 @@ public class Wall {
         canvas.drawBitmap(upTube, x, height - hTube, p);
     }
 
-    public void generate(int h) {
+    private void generate(int h) {
         Random rnd = new Random();
         height = rnd.nextInt(h - indent - indent - emptySpace - groundHeight);
         height += indent;
