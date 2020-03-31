@@ -33,13 +33,12 @@ public class GameView extends View {
     private int groundVX = -10;
     private int groundHeight = 100;
     private int measurement = 5;
-
     private final int timerInterval = 15;
 
     public GameView(Context context) {
         super(context);
 
-        changeImagines();
+        loadImagines();
         restart();
 
         Timer t = new Timer();
@@ -58,12 +57,11 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawFon(canvas);
-        tube1.draw(canvas, getHeight(), crash);
-        tube2.draw(canvas, getHeight(), crash);
+        tube1.draw(canvas, viewHeight, crash);
+        tube2.draw(canvas, viewHeight, crash);
         flappy.draw(canvas);
         drawScore(canvas, score);
         drawGround(canvas);
-        crashCheck();
     }
 
     protected void drawScore(Canvas canvas, int score) {
@@ -73,23 +71,26 @@ public class GameView extends View {
         p.setColor(Color.WHITE);
         p.setTextSize(150);
         if (score < 9)
-            canvas.drawText("" + score, (viewWidth / 2) - 50, 300, p);
+            canvas.drawText("" + score, (float) (viewWidth / 2) - 50, 300, p);
         else if (score < 99)
-            canvas.drawText("" + score, (viewWidth / 2) - 100, 300, p);
+            canvas.drawText("" + score, (float) (viewWidth / 2) - 100, 300, p);
         else
-            canvas.drawText("" + score, (viewWidth / 2) - 150, 300, p);
+            canvas.drawText("" + score, (float) (viewWidth / 2) - 150, 300, p);
+//        if (crash){
+//            canvas.drawText("Tap to restart", (float) (viewWidth / 2) - 450, (float) (viewHeight / 2), p);
+//        }
     }
 
     protected void drawFon(Canvas canvas) {
         Paint p = new Paint();
-        canvas.drawBitmap(fon, getWidth() - fon.getWidth(), getHeight() - fon.getHeight(), p);
+        canvas.drawBitmap(fon, viewWidth - fon.getWidth(), getHeight() - fon.getHeight(), p);
     }
 
     protected void drawGround(Canvas canvas) {
         Paint p = new Paint();
-        canvas.drawBitmap(ground, groundX, getHeight() - groundHeight, p);
-        canvas.drawBitmap(ground, groundX + ground.getWidth(), getHeight() - groundHeight, p);
-        if(!tubeCrash) {
+        canvas.drawBitmap(ground, groundX, viewHeight - groundHeight, p);
+        canvas.drawBitmap(ground, groundX + ground.getWidth(), viewHeight - groundHeight, p);
+        if (!tubeCrash && !crash) {
             groundX += groundVX;
             if (-groundX > ground.getWidth()) groundX += ground.getWidth();
         }
@@ -97,16 +98,16 @@ public class GameView extends View {
 
     protected void update() {
 
-        flappy.update(timerInterval);
+        flappy.update(timerInterval, crash, tubeCrash);
 
-        if(!tubeCrash) {
-            tube1.update(getWidth(), getHeight());
-            tube2.update(getWidth(), getHeight());
+        if (!tubeCrash && !crash) {
+            tube1.update(viewWidth, viewHeight);
+            tube2.update(viewWidth, viewHeight);
         }
 
         if (flappy.getY() + flappy.getFrameHeight() > viewHeight - groundHeight) {
             flappy.setY(viewHeight - flappy.getFrameHeight() - groundHeight);
-            flappy.setVy(0);
+            //flappy.setVy(0);
             crash = true;
         }
 
@@ -127,22 +128,13 @@ public class GameView extends View {
     }
 
     protected void restart() {
+        flappy.setVy(0);
+        flappy.setY((float) viewHeight / 2);
         tube1.setX(1500);
         tube2.setX(1500 * 3 / 2);
-        flappy.setY((float) (viewHeight + flappy.getFrameHeight()) / 2);
     }
 
-    protected void crashCheck() {
-        if (crash) {
-            score = 0;
-            restart();
-            changeImagines();
-            crash = false;
-            tubeCrash = false;
-        }
-    }
-
-    protected void changeImagines() {
+    protected void loadImagines() {
         Random rnd = new Random();
         int r = rnd.nextInt(3);
         switch (r) {
@@ -156,7 +148,7 @@ public class GameView extends View {
                 bird = BitmapFactory.decodeResource(getResources(), R.drawable.bbird);
                 break;
         }
-        r = rnd.nextInt(2);
+        r = 1; //rnd.nextInt(2);
         switch (r) {
             case (0):
                 fon = BitmapFactory.decodeResource(getResources(), R.drawable.lightfon);
@@ -181,7 +173,7 @@ public class GameView extends View {
         int w = bird.getWidth() / 3;
         int h = bird.getHeight();
         Rect firstFrame = new Rect(0, 0, w, h);
-        flappy = new Sprite(200, 500, 0, 0, firstFrame, bird);
+        flappy = new Sprite(200,200, 0, 0, firstFrame, bird);
         flappy.addFrame(new Rect(w, 0, w * 2, h));
         flappy.addFrame(new Rect(w * 2, 0, w * 3, h));
     }
@@ -200,8 +192,16 @@ public class GameView extends View {
 
         int eventAction = event.getAction();
         if (eventAction == MotionEvent.ACTION_DOWN) {
-            if(!tubeCrash)
-            flappy.setVy(-25);
+            if (!tubeCrash)
+                flappy.setVy(-25);
+            if (crash) {
+                score = 0;
+                loadImagines();
+                restart();
+                flappy.setVy(-25);
+                crash = false;
+                tubeCrash = false;
+            }
         }
         return true;
     }

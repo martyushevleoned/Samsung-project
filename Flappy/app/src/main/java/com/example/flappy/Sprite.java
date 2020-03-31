@@ -25,8 +25,6 @@ public class Sprite {
     private double vx;
     private double vy;
 
-    private int padding;
-
     public Sprite(double x,
                   double y,
                   double vx,
@@ -52,8 +50,6 @@ public class Sprite {
 
         this.frameWidth = initialFrame.width();
         this.frameHeight = initialFrame.height();
-
-        this.padding = 20;
     }
 
     public double getX() {
@@ -76,8 +72,8 @@ public class Sprite {
         return frameHeight;
     }
 
-    public void setVy(double velocityY) {
-        this.vy = velocityY;
+    public void setVy(double vy) {
+        this.vy = vy;
     }
 
     public void addFrame(Rect frame) {
@@ -89,15 +85,15 @@ public class Sprite {
         currentFrame %= frames.size();
     }
 
-    public void update(int ms) {
+    public void update(int ms, Boolean crash, Boolean tubeCrash) {
         timeForCurrentFrame += ms;
         if (timeForCurrentFrame >= frameTime) {
-            setNextFrame();
+            if (!tubeCrash && !crash) setNextFrame();
             timeForCurrentFrame = timeForCurrentFrame - frameTime;
         }
-        vy += g;
+        if (!crash) vy += g;
         x = x + vx;
-        y = y + vy;
+        if (!crash) y = y + vy;
     }
 
     public void drawHitBox(Canvas canvas) {
@@ -122,12 +118,4 @@ public class Sprite {
 
         //drawHitBox(canvas);
     }
-
-    public Rect getBoundingBoxRect() {
-        return new Rect((int) x + padding,
-                (int) y + padding,
-                (int) (x + frameWidth - 2 * padding),
-                (int) (y + frameHeight - 2 * padding));
-    }
-
 }

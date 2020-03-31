@@ -64,10 +64,6 @@ public class Wall {
         this.x = x;
     }
 
-    public void setVX(int vx) {
-        this.vx = vx;
-    }
-
     public void update(int w, int h) {
         x += vx;
         if (x + width < 0) {
@@ -77,7 +73,7 @@ public class Wall {
         }
     }
 
-    public void drawHiBox(Canvas canvas, int h, Boolean crash) {
+    public void drawHitBox(Canvas canvas, int h, Boolean crash) {
         Paint p = new Paint();
 
         if (crash)
@@ -92,7 +88,7 @@ public class Wall {
     public void draw(Canvas canvas, int h, Boolean crash) {
         Paint p = new Paint();
 
-        //drawHiBox(canvas, h, crash);
+        //drawHitBox(canvas, h, crash);
 
         canvas.drawBitmap(downTube, x, height + emptySpace, p);
         canvas.drawBitmap(upTube, x, height - hTube, p);
