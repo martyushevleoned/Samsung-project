@@ -1,5 +1,6 @@
 package com.example.flappy;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,45 +21,41 @@ public class GameView extends View {
     private Wall tube1;
     private Wall tube2;
 
-    private int viewWidth;
-    private int viewHeight;
     private Boolean crash = false;
     private Boolean tubeCrash = false;
+    private int invincible;
+
     Bitmap bird;
     Bitmap downTube;
     Bitmap upTube;
     Bitmap fon;
     Bitmap ground = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
+
     private int groundX = 0;
-    private int groundVX = -10;
-    private int groundHeight = 100;
-    private int measurement = 5;
+    private final int groundVX = -10;
+    private final int groundHeight = 100;
+    private final int fault = 5;
     private final int timerInterval = 15;
+    private final int tubeSpawn = 1500;
+    private final int emptySpace = 525;
 
     public GameView(Context context) {
         super(context);
 
         loadImagines();
         restart();
+        invincible = 0;
 
         Timer t = new Timer();
         t.start();
-    }
-
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-
-        viewWidth = w;
-        viewHeight = h;
-
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawFon(canvas);
-        tube1.draw(canvas, viewHeight, crash);
-        tube2.draw(canvas, viewHeight, crash);
+        tube1.draw(canvas, getHeight(), crash);
+        tube2.draw(canvas, getHeight(), crash);
         flappy.draw(canvas);
         drawScore(canvas, score);
         drawGround(canvas);
@@ -71,67 +68,74 @@ public class GameView extends View {
         p.setColor(Color.WHITE);
         p.setTextSize(150);
         if (score < 9)
-            canvas.drawText("" + score, (float) (viewWidth / 2) - 50, 300, p);
+            canvas.drawText("" + score, (float) (getWidth() / 2) - 50, 300, p);
         else if (score < 99)
-            canvas.drawText("" + score, (float) (viewWidth / 2) - 100, 300, p);
+            canvas.drawText("" + score, (float) (getWidth() / 2) - 100, 300, p);
         else
-            canvas.drawText("" + score, (float) (viewWidth / 2) - 150, 300, p);
-//        if (crash){
-//            canvas.drawText("Tap to restart", (float) (viewWidth / 2) - 450, (float) (viewHeight / 2), p);
-//        }
+            canvas.drawText("" + score, (float) (getWidth() / 2) - 150, 300, p);
+        if (crash)
+            canvas.drawText("Tap to restart", (float) (getWidth() / 2) - 450, (float) (getHeight() / 2), p);
+
+        if (invincible == 0)
+            canvas.drawText("Tap to start", (float) (getWidth() / 2) - 400, (float) (getHeight() / 2), p);
     }
 
     protected void drawFon(Canvas canvas) {
         Paint p = new Paint();
-        canvas.drawBitmap(fon, viewWidth - fon.getWidth(), getHeight() - fon.getHeight(), p);
+        canvas.drawBitmap(fon, getWidth() - fon.getWidth(), getHeight() - fon.getHeight(), p);
     }
 
     protected void drawGround(Canvas canvas) {
         Paint p = new Paint();
-        canvas.drawBitmap(ground, groundX, viewHeight - groundHeight, p);
-        canvas.drawBitmap(ground, groundX + ground.getWidth(), viewHeight - groundHeight, p);
+        canvas.drawBitmap(ground, groundX, getHeight() - groundHeight, p);
+        canvas.drawBitmap(ground, groundX + ground.getWidth(), getHeight() - groundHeight, p);
         if (!tubeCrash && !crash) {
-            groundX += groundVX;
+            if (invincible != 0) groundX += groundVX;
             if (-groundX > ground.getWidth()) groundX += ground.getWidth();
         }
     }
 
     protected void update() {
 
-        flappy.update(timerInterval, crash, tubeCrash);
-
-        if (!tubeCrash && !crash) {
-            tube1.update(viewWidth, viewHeight);
-            tube2.update(viewWidth, viewHeight);
+        if (invincible > 0) {
+            flappy.update(timerInterval, crash, tubeCrash);
+            if (!tubeCrash && !crash) {
+                tube1.update(tubeSpawn, getHeight());
+                tube2.update(tubeSpawn, getHeight());
+            }
+            invincible++;
         }
 
-        if (flappy.getY() + flappy.getFrameHeight() > viewHeight - groundHeight) {
-            flappy.setY(viewHeight - flappy.getFrameHeight() - groundHeight);
-            //flappy.setVy(0);
-            crash = true;
-        }
+        if (invincible > 10) {
+            if (flappy.getY() + flappy.getFrameHeight() > getHeight() - groundHeight) {
+                flappy.setY(getHeight() - flappy.getFrameHeight() - groundHeight);
+//            flappy.setVy(0);
+                crash = true;
+            }
 
-        if (lose(flappy.getX() + measurement,
-                flappy.getY() + measurement))
-            tubeCrash = true;
-        if (lose(flappy.getX() + flappy.getFrameWidth() - measurement,
-                flappy.getY() + measurement))
-            tubeCrash = true;
-        if (lose(flappy.getX() + measurement,
-                flappy.getY() + flappy.getFrameHeight() - measurement))
-            tubeCrash = true;
-        if (lose(flappy.getX() + flappy.getFrameWidth() - measurement,
-                flappy.getY() + flappy.getFrameHeight() - measurement))
-            tubeCrash = true;
+            if (lose(flappy.getX() + fault,
+                    flappy.getY() + fault))
+                tubeCrash = true;
+            if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
+                    flappy.getY() + fault))
+                tubeCrash = true;
+            if (lose(flappy.getX() + fault,
+                    flappy.getY() + flappy.getFrameHeight() - fault))
+                tubeCrash = true;
+            if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
+                    flappy.getY() + flappy.getFrameHeight() - fault))
+                tubeCrash = true;
+        }
 
         invalidate();
     }
 
     protected void restart() {
         flappy.setVy(0);
-        flappy.setY((float) viewHeight / 2);
-        tube1.setX(1500);
-        tube2.setX(1500 * 3 / 2);
+        flappy.setY(500);
+        invincible = 1;
+        tube1.setX(tubeSpawn);
+        tube2.setX(tubeSpawn * 3 / 2);
     }
 
     protected void loadImagines() {
@@ -148,32 +152,29 @@ public class GameView extends View {
                 bird = BitmapFactory.decodeResource(getResources(), R.drawable.bbird);
                 break;
         }
-        r = 1; //rnd.nextInt(2);
-        switch (r) {
-            case (0):
-                fon = BitmapFactory.decodeResource(getResources(), R.drawable.lightfon);
-                break;
-            default:
-                fon = BitmapFactory.decodeResource(getResources(), R.drawable.darkfon);
-                break;
-        }
         r = rnd.nextInt(2);
-        switch (r) {
-            case (0):
-                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.downtube);
-                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.uptube);
-                break;
-            default:
-                downTube = BitmapFactory.decodeResource(getResources(), R.drawable.reddowntube);
-                upTube = BitmapFactory.decodeResource(getResources(), R.drawable.reduptube);
-                break;
+        if (r == 0) {
+            fon = BitmapFactory.decodeResource(getResources(), R.drawable.lightfon);
+        } else {
+            fon = BitmapFactory.decodeResource(getResources(), R.drawable.darkfon);
         }
-        tube1 = new Wall(525, 750, downTube.getWidth(), 250, 1500, -10, downTube, upTube, upTube.getHeight(), groundHeight);
-        tube2 = new Wall(525, 750, downTube.getWidth(), 250, 1500 * 3 / 2, -10, downTube, upTube, upTube.getHeight(), groundHeight);
+
+        r = rnd.nextInt(2);
+        if (r == 0) {
+            downTube = BitmapFactory.decodeResource(getResources(), R.drawable.downtube);
+            upTube = BitmapFactory.decodeResource(getResources(), R.drawable.uptube);
+        } else {
+            downTube = BitmapFactory.decodeResource(getResources(), R.drawable.reddowntube);
+            upTube = BitmapFactory.decodeResource(getResources(), R.drawable.reduptube);
+        }
+        tube1 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn, -10, downTube, upTube, upTube.getHeight(), groundHeight);
+        tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2, -10, downTube, upTube, upTube.getHeight(), groundHeight);
+//        tube1.setX(-tube1.getEdge());
+        tube2.setX(-tubeSpawn);
         int w = bird.getWidth() / 3;
         int h = bird.getHeight();
         Rect firstFrame = new Rect(0, 0, w, h);
-        flappy = new Sprite(200,200, 0, 0, firstFrame, bird);
+        flappy = new Sprite(200, 200, 0, 0, firstFrame, bird);
         flappy.addFrame(new Rect(w, 0, w * 2, h));
         flappy.addFrame(new Rect(w * 2, 0, w * 3, h));
     }
@@ -181,24 +182,25 @@ public class GameView extends View {
     protected boolean lose(double x, double y) {
         if ((x > tube1.getX() && x < tube1.getEdge()) && (y < tube1.getUpTube() || y > tube1.getDownTube()))
             return true;
-        else if ((x > tube2.getX() && x < tube2.getEdge()) && (y < tube2.getUpTube() || y > tube2.getDownTube()))
-            return true;
         else
-            return false;
+            return (x > tube2.getX() && x < tube2.getEdge()) && (y < tube2.getUpTube() || y > tube2.getDownTube());
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
         int eventAction = event.getAction();
         if (eventAction == MotionEvent.ACTION_DOWN) {
-            if (!tubeCrash)
+            if (!tubeCrash) {
                 flappy.setVy(-25);
+                invincible++;
+            }
+
             if (crash) {
                 score = 0;
                 loadImagines();
                 restart();
-                flappy.setVy(-25);
                 crash = false;
                 tubeCrash = false;
             }
@@ -208,7 +210,7 @@ public class GameView extends View {
 
     class Timer extends CountDownTimer {
 
-        public Timer() {
+        Timer() {
             super(Integer.MAX_VALUE, timerInterval);
         }
 

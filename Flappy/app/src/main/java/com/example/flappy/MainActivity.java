@@ -36,21 +36,6 @@ import androidx.appcompat.app.AppCompatActivity;
  * update - смена кадров, реализация передвижения
  * drawHitBox - отрисовывает хитбокс
  * draw - отрисовывает птицу
- *
- * класс GameView
- * поля:
- * flappy - экземпляр класса Sprite
- * tube1, tube2 - экземпляры класса Wall
- * viewHeight, viewWidth - размеры view
- * crash - становится true когда птица косается земли
- * tubeCrash - становится true когда птица касается трубы
- * bird, downTube, upTube, fon, ground - картинки
- * groundX, groundHeight - координаты для отображения земли
- * groundVX - скорость земли (совпадает со скоростью труб)
- * measurement - количество пикселей на которое уменьшается хитбокс
- * timeInterval - время через которое цикл проходит иттерацию
- *
- *
  * */
 
 public class MainActivity extends AppCompatActivity {

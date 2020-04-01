@@ -64,10 +64,10 @@ public class Wall {
         this.x = x;
     }
 
-    void update(int w, int h) {
+    void update(int tubeSpawn, int h) {
         x += vx;
         if (x + width < 0) {
-            x = 1500 - width;
+            x = tubeSpawn - width;
             generate(h);
             GameView.score++;
         }
