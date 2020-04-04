@@ -21,9 +21,16 @@ public class GameView extends View {
     private Wall tube1;
     private Wall tube2;
 
-    private Boolean crash = false;
-    private Boolean tubeCrash = false;
-    private int invincible;
+    private int stage;
+
+    /*
+     * stage
+     * 0 - tap to start
+     * 1 - game play
+     * 2 - flappy was stopped by tube
+     * 3 - flappy was stopped by ground
+     * 4 - tap to restart
+     * */
 
     Bitmap bird;
     Bitmap downTube;
@@ -38,13 +45,16 @@ public class GameView extends View {
     private final int timerInterval = 15;
     private final int tubeSpawn = 1500;
     private final int emptySpace = 525;
+    private int resultY;
+    private int resultEnd;
 
     public GameView(Context context) {
         super(context);
 
         loadImagines();
         restart();
-        invincible = 0;
+
+        stage = 0;
 
         Timer t = new Timer();
         t.start();
@@ -54,77 +64,109 @@ public class GameView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         drawFon(canvas);
-        tube1.draw(canvas, getHeight(), crash);
-        tube2.draw(canvas, getHeight(), crash);
-        flappy.draw(canvas);
+        tube1.draw(canvas, getHeight());
+        tube2.draw(canvas, getHeight());
         drawScore(canvas, score);
+        flappy.draw(canvas);
         drawGround(canvas);
+        drawResults(canvas);
     }
 
     protected void drawScore(Canvas canvas, int score) {
         Paint p = new Paint();
-//        p.setAntiAlias(true);
         p.setSubpixelText(true);
         p.setColor(Color.WHITE);
         p.setTextSize(150);
-        if (score < 9)
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 50, 300, p);
-        else if (score < 99)
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 100, 300, p);
-        else
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 150, 300, p);
-        if (crash)
-            canvas.drawText("Tap to restart", (float) (getWidth() / 2) - 450, (float) (getHeight() / 2), p);
 
-        if (invincible == 0)
-            canvas.drawText("Tap to start", (float) (getWidth() / 2) - 400, (float) (getHeight() / 2), p);
+        if (stage < 3) {
+            if (score < 9)
+                canvas.drawText("" + score, (float) (getWidth() / 2) - 50, 300, p);
+            else if (score < 99)
+                canvas.drawText("" + score, (float) (getWidth() / 2) - 100, 300, p);
+            else
+                canvas.drawText("" + score, (float) (getWidth() / 2) - 150, 300, p);
+        }
+        if (stage == 0) {
+            Bitmap tap = BitmapFactory.decodeResource(getResources(), R.drawable.taptostart);
+            canvas.drawBitmap(tap, (float) (getWidth() - tap.getWidth()) / 2, (float) getHeight() / 2 + 100, p);
+
+            Bitmap ready = BitmapFactory.decodeResource(getResources(), R.drawable.getready);
+            canvas.drawBitmap(ready, (float) (getWidth() - ready.getWidth()) / 2, (float) getHeight() / 2 - 100 - ready.getHeight(), p);
+        }
     }
 
     protected void drawFon(Canvas canvas) {
         Paint p = new Paint();
-        canvas.drawBitmap(fon, getWidth() - fon.getWidth(), getHeight() - fon.getHeight(), p);
+        canvas.drawBitmap(fon, (float) (getWidth() - fon.getWidth()) / 2, (float) (getHeight() - fon.getHeight()) / 2, p);
     }
 
     protected void drawGround(Canvas canvas) {
         Paint p = new Paint();
         canvas.drawBitmap(ground, groundX, getHeight() - groundHeight, p);
         canvas.drawBitmap(ground, groundX + ground.getWidth(), getHeight() - groundHeight, p);
-        if (!tubeCrash && !crash) {
-            if (invincible != 0) groundX += groundVX;
-            if (-groundX > ground.getWidth()) groundX += ground.getWidth();
+        if (stage < 2)
+            if (stage != 0)
+                groundX += groundVX;
+        if (-groundX > ground.getWidth()) groundX += ground.getWidth();
+
+    }
+
+    protected void drawResults(Canvas canvas) {
+
+        if (stage >= 3) {
+            Paint p = new Paint();
+
+            Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+            if (resultEnd <= getHeight() / 2 - gameOver.getHeight() - 100) {
+                resultEnd += 15;
+            }
+            canvas.drawBitmap(gameOver, (float) (getWidth() - gameOver.getWidth()) / 2, resultEnd, p);
+
+
+            Bitmap results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
+            if (resultY >= getHeight() / 2 + 100) {
+                resultY -= 15;
+            } else {
+                stage = 4;
+            }
+
+            canvas.drawBitmap(results, (float) (getWidth() - results.getWidth()) / 2, resultY, p);
+
         }
     }
 
     protected void update() {
 
-        if (invincible > 0) {
-            flappy.update(timerInterval, crash, tubeCrash);
-            if (!tubeCrash && !crash) {
-                tube1.update(tubeSpawn, getHeight());
-                tube2.update(tubeSpawn, getHeight());
-            }
-            invincible++;
-        }
+        if (stage != 0 && stage < 3) {
+            flappy.update(timerInterval, stage);
+            if (stage < 2)
+                if (stage != 0) {
+                    tube1.update(tubeSpawn, getHeight());
+                    tube2.update(tubeSpawn, getHeight());
+                }
 
-        if (invincible > 10) {
             if (flappy.getY() + flappy.getFrameHeight() > getHeight() - groundHeight) {
                 flappy.setY(getHeight() - flappy.getFrameHeight() - groundHeight);
-//            flappy.setVy(0);
-                crash = true;
+                stage = 3;
+                resultY = getHeight();
+                Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+                resultEnd = 0 - gameOver.getHeight();
             }
 
-            if (lose(flappy.getX() + fault,
-                    flappy.getY() + fault))
-                tubeCrash = true;
-            if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
-                    flappy.getY() + fault))
-                tubeCrash = true;
-            if (lose(flappy.getX() + fault,
-                    flappy.getY() + flappy.getFrameHeight() - fault))
-                tubeCrash = true;
-            if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
-                    flappy.getY() + flappy.getFrameHeight() - fault))
-                tubeCrash = true;
+            if (stage != 3) {
+                if (lose(flappy.getX() + fault,
+                        flappy.getY() + fault))
+                    stage = 2;
+                if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
+                        flappy.getY() + fault))
+                    stage = 2;
+                if (lose(flappy.getX() + fault,
+                        flappy.getY() + flappy.getFrameHeight() - fault))
+                    stage = 2;
+                if (lose(flappy.getX() + flappy.getFrameWidth() - fault,
+                        flappy.getY() + flappy.getFrameHeight() - fault))
+                    stage = 2;
+            }
         }
 
         invalidate();
@@ -132,8 +174,10 @@ public class GameView extends View {
 
     protected void restart() {
         flappy.setVy(0);
+//        Bitmap birdh = BitmapFactory.decodeResource(getResources(), R.drawable.rbird);
+//        flappy.setY((float)(getHeight() - birdh.getHeight()) / 2);
         flappy.setY(500);
-        invincible = 1;
+        stage = 0;
         tube1.setX(tubeSpawn);
         tube2.setX(tubeSpawn * 3 / 2);
     }
@@ -192,17 +236,15 @@ public class GameView extends View {
 
         int eventAction = event.getAction();
         if (eventAction == MotionEvent.ACTION_DOWN) {
-            if (!tubeCrash) {
+            if (stage < 2) {
                 flappy.setVy(-25);
-                invincible++;
+                stage = 1;
             }
 
-            if (crash) {
+            if (stage == 4) {
                 score = 0;
                 loadImagines();
                 restart();
-                crash = false;
-                tubeCrash = false;
             }
         }
         return true;

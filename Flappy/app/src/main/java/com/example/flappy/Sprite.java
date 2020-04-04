@@ -85,15 +85,17 @@ public class Sprite {
         currentFrame %= frames.size();
     }
 
-    void update(int ms, Boolean crash, Boolean tubeCrash) {
+    void update(int ms, int stage) {
         timeForCurrentFrame += ms;
         if (timeForCurrentFrame >= frameTime) {
-            if (!tubeCrash && !crash) setNextFrame();
+            if (stage < 2) setNextFrame();
             timeForCurrentFrame = timeForCurrentFrame - frameTime;
         }
-        if (!crash) vy += g;
+        if (stage < 3) {
+            vy += g;
+            y = y + vy;
+        }
         x = x + vx;
-        if (!crash) y = y + vy;
     }
 
     public void drawHitBox(Canvas canvas) {

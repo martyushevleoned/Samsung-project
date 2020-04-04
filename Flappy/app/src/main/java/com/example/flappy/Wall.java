@@ -73,22 +73,8 @@ public class Wall {
         }
     }
 
-    public void drawHitBox(Canvas canvas, int h, Boolean crash) {
+    void draw(Canvas canvas, int h) {
         Paint p = new Paint();
-
-        if (crash)
-            p.setColor(Color.RED);
-        else
-            p.setColor(Color.GREEN);
-
-        canvas.drawRect(x, 0, x + width, height, p);
-        canvas.drawRect(x, height + emptySpace, x + width, h, p);
-    }
-
-    void draw(Canvas canvas, int h, Boolean crash) {
-        Paint p = new Paint();
-
-        //drawHitBox(canvas, h, crash);
 
         canvas.drawBitmap(downTube, x, height + emptySpace, p);
         canvas.drawBitmap(upTube, x, height - hTube, p);
