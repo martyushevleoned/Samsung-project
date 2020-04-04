@@ -1,0 +1,2 @@
+rootProject.name='Flappy2'
+include ':app'
