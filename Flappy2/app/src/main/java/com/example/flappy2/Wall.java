@@ -3,23 +3,24 @@ package com.example.flappy2;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.Random;
 
 class Wall {
 
-    private int emptySpace;
-    private int height;
-    private int width;
-    private int x;
-    private int vx;
-    private int indent;
-    private Bitmap downTube;
-    private Bitmap upTube;
-    private int hTube;
-    private int groundHeight;
+    int emptySpace;
+    int height;
+    int width;
+    int x;
+    int vx;
+    int indent;
+    Bitmap downTube;
+    Bitmap upTube;
+    int hTube;
+    int groundHeight;
+
+    private int vy;
 
     Wall(int emptySpace,
          int height,
@@ -60,12 +61,9 @@ class Wall {
         return height + emptySpace;
     }
 
-    void setX(int x) {
-        this.x = x;
-    }
-
     void update(int tubeSpawn, int h) {
         x += vx;
+        move(h);
         if (x + width < 0) {
             x = tubeSpawn - width;
             generate(h);
@@ -80,9 +78,21 @@ class Wall {
         canvas.drawBitmap(upTube, x, height - hTube, p);
     }
 
-    private void generate(int h) {
+    void generate(int h) {
         Random rnd = new Random();
+        vy = rnd.nextInt(2);
+        vy *= 2;
+        vy -= 1;
+        vy *= 2;
         height = rnd.nextInt(h - indent - indent - emptySpace - groundHeight);
         height += indent;
+    }
+
+    private void move(int h) {
+
+        if (height < indent) vy *= -1;
+        if (height + emptySpace > h - indent - groundHeight) vy *= -1;
+
+        height += vy;
     }
 }
