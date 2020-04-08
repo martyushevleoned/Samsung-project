@@ -112,4 +112,8 @@ public class Sprite {
 
         //drawHitBox(canvas);
     }
+
+    double getVy() {
+        return vy;
+    }
 }

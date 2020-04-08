@@ -67,7 +67,6 @@ class Wall {
         if (x + width < 0) {
             x = tubeSpawn - width;
             generate(h);
-            GameView.score++;
         }
     }
 

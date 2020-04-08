@@ -20,22 +20,31 @@ public class GameView extends View {
     private Sprite flappy;
     private Wall tube1;
     private Wall tube2;
+    private Boolean point;
+
+    Context cont;
+
+    MediaPlayer points;
+    MediaPlayer wing;
+    MediaPlayer swooshing;
+    MediaPlayer die;
+    MediaPlayer hit;
 
     Bitmap bird;
     Bitmap downTube;
     Bitmap upTube;
     Bitmap fon;
     Bitmap medal;
-    Bitmap ground = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
-    Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
-    Bitmap results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
+    Bitmap ground;
+    Bitmap gameOver;
+    Bitmap results;
 
     private final int groundVX = -10;
     private final int groundHeight = 100;
     private final int error = 8;
     private final int emptySpace = 600;
-    public static int score;
-    public static int maxScore = 0;
+    private int score;
+    private int maxScore = 0;
     private int tubeSpawn;
     private int resultY;
     private int resultEnd;
@@ -55,27 +64,24 @@ public class GameView extends View {
 
     public GameView(Context context) {
         super(context);
+        cont = context;
 
-//        MediaPlayer mediaPlayer = MediaPlayer.create(context, R.raw.bird);
-//        soundPlay(mediaPlayer);
-
-        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
-//        File file = new File("test.txt");
-//        Scanner sc=new Scanner(in);
-//        try {
-//            PrintWriter writer = new PrintWriter(new FileWriter(file));
-//            writer.printf("%x", 255);
-//            writer.close();
-//            sc.file;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+        load();
 
         Timer t = new Timer();
         t.start();
+    }
+
+    private void load() {
+        points = MediaPlayer.create(cont, R.raw.sfx_point);
+        wing = MediaPlayer.create(cont, R.raw.sfx_wing);
+        swooshing = MediaPlayer.create(cont, R.raw.sfx_swooshing);
+        die = MediaPlayer.create(cont, R.raw.sfx_die);
+        hit = MediaPlayer.create(cont, R.raw.sfx_hit);
+
+        ground = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
+        gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+        results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
     }
 
     @Override
@@ -173,6 +179,21 @@ public class GameView extends View {
 
         if (stage > 0 && stage < 3) {
             flappy.update(timerInterval, stage);
+
+            if (flappy.getX() + error > tube1.getEdge()) {
+                if (point == false){
+                    point = true;
+                    soundPlay(points);
+                }
+            }
+            if (flappy.getX() + error > tube2.getEdge()) {
+                if (point == true){
+                    point = false;
+                    soundPlay(points);
+                }
+            }
+
+
             if (stage < 2)
                 if (stage != 0) {
                     tube1.update(tubeSpawn, getHeight());
@@ -183,7 +204,6 @@ public class GameView extends View {
                 flappy.setY(getHeight() - flappy.getFrameHeight() - groundHeight);
                 stage = 3;
                 resultY = getHeight();
-                Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
                 resultEnd = 0 - gameOver.getHeight();
                 if (score > maxScore)
                     medal = BitmapFactory.decodeResource(getResources(), R.drawable.platinummedal);
@@ -192,16 +212,33 @@ public class GameView extends View {
                 else if (score > maxScore / 3)
                     medal = BitmapFactory.decodeResource(getResources(), R.drawable.silvermedal);
                 else medal = BitmapFactory.decodeResource(getResources(), R.drawable.bronzemedal);
+                soundPlay(hit);
             }
 
-            if (stage != 3) {
-                if (lose(flappy.getX() + error, flappy.getY() + error)) stage = 2;
-                if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + error))
+            if (stage == 1) {
+                if (lose(flappy.getX() + error, flappy.getY() + error)) {
                     stage = 2;
-                if (lose(flappy.getX() + error, flappy.getY() + flappy.getFrameHeight() - error))
-                    stage = 2;
-                if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + flappy.getFrameHeight() - error))
-                    stage = 2;
+                    flappy.setVy(flappy.getVy() + 10);
+                    soundPlay(die);
+                }
+                if (stage != 2)
+                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + error)) {
+                        stage = 2;
+                        flappy.setVy(flappy.getVy() + 10);
+                        soundPlay(die);
+                    }
+                if (stage != 2)
+                    if (lose(flappy.getX() + error, flappy.getY() + flappy.getFrameHeight() - error)) {
+                        stage = 2;
+                        flappy.setVy(flappy.getVy() + 10);
+                        soundPlay(die);
+                    }
+                if (stage != 2)
+                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + flappy.getFrameHeight() - error)) {
+                        stage = 2;
+                        flappy.setVy(flappy.getVy() + 10);
+                        soundPlay(die);
+                    }
             }
         }
 
@@ -259,21 +296,6 @@ public class GameView extends View {
         tube1 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn, groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
         tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2, groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
 
-//        Wall[] mas = new Wall[2];
-//
-//        for (int i = 0; i < mas.length; i++) {
-//            mas[i].emptySpace = emptySpace;
-//            mas[i].height = 750;
-//            mas[i].width = downTube.getWidth();
-//            mas[i].indent = 250;
-//            mas[i].x = tubeSpawn * ((i / 2) + 1);
-//            mas[i].vx = groundVX;
-//            mas[i].downTube = downTube;
-//            mas[i].upTube = upTube;
-//            mas[i].hTube = upTube.getHeight();
-//            mas[i].groundHeight = groundHeight;
-//        }
-
         int w = bird.getWidth() / 3;
         int h = bird.getHeight();
         Rect firstFrame = new Rect(0, 0, w, h);
@@ -284,6 +306,7 @@ public class GameView extends View {
         tube1.generate(getHeight());
         tube2.generate(getHeight());
 
+        point = false;
         stage = 0;
         score = 0;
     }
@@ -301,9 +324,11 @@ public class GameView extends View {
             if (stage < 2) {
                 flappy.setVy(-25);
                 stage = 1;
+                soundPlay(wing);
             }
 
             if (stage == 4) {
+                soundPlay(swooshing);
                 restart();
             }
         }
@@ -311,7 +336,6 @@ public class GameView extends View {
     }
 
     class Timer extends CountDownTimer {
-
         Timer() {
             super(Integer.MAX_VALUE, timerInterval);
         }
@@ -323,7 +347,6 @@ public class GameView extends View {
 
         @Override
         public void onFinish() {
-
         }
     }
 }

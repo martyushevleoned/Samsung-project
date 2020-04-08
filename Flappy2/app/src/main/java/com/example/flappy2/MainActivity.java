@@ -1,7 +1,9 @@
 package com.example.flappy2;
 
 import android.annotation.SuppressLint;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import static android.content.pm.ActivityInfo.*;
@@ -14,7 +16,5 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(SCREEN_ORIENTATION_USER_PORTRAIT);
         setContentView(new GameView(this));
-
-
     }
 }
