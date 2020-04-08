@@ -20,7 +20,7 @@ public class GameView extends View {
     private Sprite flappy;
     private Wall tube1;
     private Wall tube2;
-    private Boolean point;
+    public static Boolean point;
 
     Context cont;
 
@@ -35,9 +35,9 @@ public class GameView extends View {
     Bitmap upTube;
     Bitmap fon;
     Bitmap medal;
-    Bitmap ground;
-    Bitmap gameOver;
-    Bitmap results;
+    Bitmap ground = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
+    Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
+    Bitmap results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
 
     private final int groundVX = -10;
     private final int groundHeight = 100;
@@ -78,10 +78,6 @@ public class GameView extends View {
         swooshing = MediaPlayer.create(cont, R.raw.sfx_swooshing);
         die = MediaPlayer.create(cont, R.raw.sfx_die);
         hit = MediaPlayer.create(cont, R.raw.sfx_hit);
-
-        ground = BitmapFactory.decodeResource(getResources(), R.drawable.earth);
-        gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
-        results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
     }
 
     @Override
@@ -181,15 +177,17 @@ public class GameView extends View {
             flappy.update(timerInterval, stage);
 
             if (flappy.getX() + error > tube1.getEdge()) {
-                if (point == false){
+                if (!point){
                     point = true;
-                    soundPlay(points);
+                    points.start();
+                    score++;
                 }
             }
             if (flappy.getX() + error > tube2.getEdge()) {
-                if (point == true){
-                    point = false;
-                    soundPlay(points);
+                if (!point){
+                    point = true;
+                    points.start();
+                    score++;
                 }
             }
 
