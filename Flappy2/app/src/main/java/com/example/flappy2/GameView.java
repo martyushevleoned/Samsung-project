@@ -20,15 +20,18 @@ public class GameView extends View {
     private Sprite flappy;
     private Wall tube1;
     private Wall tube2;
-    public static Boolean point;
+    private Boolean point;
+    private Boolean tap;
 
     Context cont;
 
-    MediaPlayer points;
-    MediaPlayer wing;
+    MediaPlayer wing1;
+    MediaPlayer wing2;
     MediaPlayer swooshing;
     MediaPlayer die;
     MediaPlayer hit;
+    MediaPlayer points1;
+    MediaPlayer points2;
 
     Bitmap bird;
     Bitmap downTube;
@@ -43,6 +46,7 @@ public class GameView extends View {
     private final int groundHeight = 100;
     private final int error = 8;
     private final int emptySpace = 600;
+
     private int score;
     private int maxScore = 0;
     private int tubeSpawn;
@@ -73,11 +77,13 @@ public class GameView extends View {
     }
 
     private void load() {
-        points = MediaPlayer.create(cont, R.raw.sfx_point);
-        wing = MediaPlayer.create(cont, R.raw.sfx_wing);
+        wing1 = MediaPlayer.create(cont, R.raw.sfx_wing);
+        wing2 = MediaPlayer.create(cont, R.raw.sfx_wing);
         swooshing = MediaPlayer.create(cont, R.raw.sfx_swooshing);
         die = MediaPlayer.create(cont, R.raw.sfx_die);
         hit = MediaPlayer.create(cont, R.raw.sfx_hit);
+        points1 = MediaPlayer.create(cont, R.raw.sfx_point);
+        points2 = MediaPlayer.create(cont, R.raw.sfx_point);
     }
 
     @Override
@@ -102,9 +108,9 @@ public class GameView extends View {
         p.setTextSize(150);
 
         if (stage < 3) {
-            if (score < 9)
+            if (score < 10)
                 canvas.drawText("" + score, (float) (getWidth() / 2) - 50, 300, p);
-            else if (score < 99)
+            else if (score < 100)
                 canvas.drawText("" + score, (float) (getWidth() / 2) - 100, 300, p);
             else
                 canvas.drawText("" + score, (float) (getWidth() / 2) - 150, 300, p);
@@ -177,16 +183,16 @@ public class GameView extends View {
             flappy.update(timerInterval, stage);
 
             if (flappy.getX() + error > tube1.getEdge()) {
-                if (!point){
-                    point = true;
-                    points.start();
+                if (!point) {
+                    soundPlay(points1);
+                    point = !point;
                     score++;
                 }
             }
             if (flappy.getX() + error > tube2.getEdge()) {
-                if (!point){
-                    point = true;
-                    points.start();
+                if (point) {
+                    soundPlay(points2);
+                    point = !point;
                     score++;
                 }
             }
@@ -305,6 +311,7 @@ public class GameView extends View {
         tube2.generate(getHeight());
 
         point = false;
+        tap = false;
         stage = 0;
         score = 0;
     }
@@ -322,7 +329,13 @@ public class GameView extends View {
             if (stage < 2) {
                 flappy.setVy(-25);
                 stage = 1;
-                soundPlay(wing);
+
+                if (tap)
+                    soundPlay(wing1);
+                else
+                    soundPlay(wing2);
+
+                tap = !tap;
             }
 
             if (stage == 4) {
