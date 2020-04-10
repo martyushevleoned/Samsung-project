@@ -297,8 +297,8 @@ public class GameView extends View {
             upTube = BitmapFactory.decodeResource(getResources(), R.drawable.reduptube);
         }
 
-        tube1 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn, groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
-        tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2, groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
+        tube1 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn + upTube.getWidth(), groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
+        tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2  + upTube.getWidth(), groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
 
         int w = bird.getWidth() / 3;
         int h = bird.getHeight();
