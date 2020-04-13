@@ -21,17 +21,15 @@ public class GameView extends View {
     private Wall tube1;
     private Wall tube2;
     private Boolean point;
-    private Boolean tap;
 
     Context cont;
 
-    MediaPlayer wing1;
-    MediaPlayer wing2;
     MediaPlayer swooshing;
     MediaPlayer die;
     MediaPlayer hit;
-    MediaPlayer points1;
-    MediaPlayer points2;
+    MediaPlayer[] points = new MediaPlayer[2];
+    MediaPlayer[] wings = new MediaPlayer[10];
+
 
     Bitmap bird;
     Bitmap downTube;
@@ -47,8 +45,9 @@ public class GameView extends View {
     private final int error = 8;
     private final int emptySpace = 600;
 
+    private int wingCounter;
     private int score;
-    private int maxScore = 0;
+    private static int maxScore = 0;
     private int tubeSpawn;
     private int resultY;
     private int resultEnd;
@@ -77,13 +76,16 @@ public class GameView extends View {
     }
 
     private void load() {
-        wing1 = MediaPlayer.create(cont, R.raw.sfx_wing);
-        wing2 = MediaPlayer.create(cont, R.raw.sfx_wing);
         swooshing = MediaPlayer.create(cont, R.raw.sfx_swooshing);
         die = MediaPlayer.create(cont, R.raw.sfx_die);
         hit = MediaPlayer.create(cont, R.raw.sfx_hit);
-        points1 = MediaPlayer.create(cont, R.raw.sfx_point);
-        points2 = MediaPlayer.create(cont, R.raw.sfx_point);
+
+        for (int i = 0; i < points.length;i++){
+            points[i]  = MediaPlayer.create(cont, R.raw.sfx_point);
+        }
+        for (int i = 0; i < wings.length;i++){
+            wings[i] = MediaPlayer.create(cont, R.raw.sfx_wing);
+        }
     }
 
     @Override
@@ -149,8 +151,7 @@ public class GameView extends View {
     protected void drawResults(Canvas canvas) {
         if (stage >= 3) {
             Paint p = new Paint();
-            Random rnd = new Random();
-            int r = rnd.nextInt(100);
+
             p.setTextSize(90);
             p.setColor(Color.WHITE);
 
@@ -184,21 +185,21 @@ public class GameView extends View {
 
             if (flappy.getX() + error > tube1.getEdge()) {
                 if (!point) {
-                    soundPlay(points1);
-                    point = !point;
+                    point = true;
                     score++;
+                    soundPlay(points[0]);
                 }
             }
             if (flappy.getX() + error > tube2.getEdge()) {
                 if (point) {
-                    soundPlay(points2);
-                    point = !point;
+                    point = false;
                     score++;
+                    soundPlay(points[1]);
                 }
             }
 
 
-            if (stage < 2)
+            if (stage == 0 || stage == 1)
                 if (stage != 0) {
                     tube1.update(tubeSpawn, getHeight());
                     tube2.update(tubeSpawn, getHeight());
@@ -298,7 +299,7 @@ public class GameView extends View {
         }
 
         tube1 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn + upTube.getWidth(), groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
-        tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2  + upTube.getWidth(), groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
+        tube2 = new Wall(emptySpace, 750, downTube.getWidth(), 250, tubeSpawn * 3 / 2 + upTube.getWidth(), groundVX, downTube, upTube, upTube.getHeight(), groundHeight);
 
         int w = bird.getWidth() / 3;
         int h = bird.getHeight();
@@ -311,7 +312,8 @@ public class GameView extends View {
         tube2.generate(getHeight());
 
         point = false;
-        tap = false;
+        wingCounter = 0;
+
         stage = 0;
         score = 0;
     }
@@ -326,16 +328,12 @@ public class GameView extends View {
 
         int eventAction = event.getAction();
         if (eventAction == MotionEvent.ACTION_DOWN) {
-            if (stage < 2) {
+            if (stage == 0 || stage == 1) {
                 flappy.setVy(-25);
                 stage = 1;
-
-                if (tap)
-                    soundPlay(wing1);
-                else
-                    soundPlay(wing2);
-
-                tap = !tap;
+                soundPlay(wings[wingCounter]);
+                wingCounter++;
+                wingCounter %= wings.length;
             }
 
             if (stage == 4) {
