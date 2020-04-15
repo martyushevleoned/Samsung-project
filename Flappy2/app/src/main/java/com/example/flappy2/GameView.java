@@ -43,7 +43,7 @@ public class GameView extends View {
     private final int groundVX = -10;
     private final int groundHeight = 100;
     private final int error = 8;
-    private final int emptySpace = 600;
+    private final int emptySpace = 550;
 
     private int wingCounter;
     private int score;
@@ -100,7 +100,8 @@ public class GameView extends View {
             flappy.draw(canvas);
             drawGround(canvas);
             drawResults(canvas);
-        }
+        } else
+            canvas.drawColor(Color.WHITE);
     }
 
     protected void drawScore(Canvas canvas, int score) {
@@ -221,25 +222,25 @@ public class GameView extends View {
             }
 
             if (stage == 1) {
-                if (lose(flappy.getX() + error, flappy.getY() + error)) {
+                if (lose(flappy.getX() + error, flappy.getY())) {
                     stage = 2;
                     flappy.setVy(flappy.getVy() + 10);
                     soundPlay(die);
                 }
                 if (stage != 2)
-                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + error)) {
+                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY())) {
                         stage = 2;
                         flappy.setVy(flappy.getVy() + 10);
                         soundPlay(die);
                     }
                 if (stage != 2)
-                    if (lose(flappy.getX() + error, flappy.getY() + flappy.getFrameHeight() - error)) {
+                    if (lose(flappy.getX() + error, flappy.getY() + flappy.getFrameHeight())) {
                         stage = 2;
                         flappy.setVy(flappy.getVy() + 10);
                         soundPlay(die);
                     }
                 if (stage != 2)
-                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + flappy.getFrameHeight() - error)) {
+                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + flappy.getFrameHeight())) {
                         stage = 2;
                         flappy.setVy(flappy.getVy() + 10);
                         soundPlay(die);
