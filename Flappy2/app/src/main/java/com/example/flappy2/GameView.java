@@ -174,6 +174,7 @@ public class GameView extends View {
             if (score > maxScore) maxScore = score;
             if (MainActivity.saveThis < maxScore) {
                 MainActivity.saveThis = maxScore;
+                MainActivity.save();
             }
 
             canvas.drawText("" + score, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 6 / 16), p);

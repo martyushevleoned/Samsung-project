@@ -27,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     final String SAVED_NUM = "NUMBER";
     SharedPreferences sharedPreferences;
 
+    public static void save(){
+
+    }
+
     void saveData() {
         sharedPreferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
