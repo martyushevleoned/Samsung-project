@@ -70,6 +70,7 @@ public class GameView extends View {
         cont = context;
 
         load();
+        MainActivity.loadData(cont);
 
         Timer t = new Timer();
         t.start();
@@ -171,12 +172,6 @@ public class GameView extends View {
                     (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() / 3) - medal.getWidth()),
                     (float) (resultY + ((results.getHeight() - medal.getHeight()) / 2)), p);
 
-            if (score > maxScore) maxScore = score;
-            if (MainActivity.saveThis < maxScore) {
-                MainActivity.saveThis = maxScore;
-                MainActivity.save();
-            }
-
             canvas.drawText("" + score, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 6 / 16), p);
             canvas.drawText("" + maxScore, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 13 / 16), p);
 
@@ -223,6 +218,15 @@ public class GameView extends View {
                     medal = BitmapFactory.decodeResource(getResources(), R.drawable.silvermedal);
                 else medal = BitmapFactory.decodeResource(getResources(), R.drawable.bronzemedal);
                 soundPlay(hit);
+
+                if (score > maxScore) maxScore = score;
+
+                if (MainActivity.saveThis < maxScore) {
+                    MainActivity.saveThis = maxScore;
+                    MainActivity.saveData(cont);
+                }else {
+                    maxScore = MainActivity.saveThis;
+                }
             }
 
             if (stage == 1) {

@@ -1,6 +1,7 @@
 package com.example.flappy2;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,22 +25,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static int saveThis = 0;
-    final String SAVED_NUM = "NUMBER";
-    SharedPreferences sharedPreferences;
+    static String SAVED_NUM = "NUMBER";
+    static SharedPreferences sharedPreferences;
 
-    public static void save(){
-
-    }
-
-    void saveData() {
-        sharedPreferences = getPreferences(MODE_PRIVATE);
+    static void saveData(Context context) {
+        sharedPreferences = context.getSharedPreferences(SAVED_NUM, MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putInt(SAVED_NUM, Integer.parseInt(String.valueOf(saveThis)));
         editor.apply();
     }
 
-    void loadData() {
-        sharedPreferences = getPreferences(MODE_PRIVATE);
+    static void loadData(Context context) {
+        sharedPreferences = context.getSharedPreferences(SAVED_NUM, MODE_PRIVATE);
         saveThis = sharedPreferences.getInt(SAVED_NUM, 0);
     }
 }
