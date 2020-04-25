@@ -1,6 +1,7 @@
 package com.example.flappy2;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
@@ -20,5 +21,21 @@ public class MainActivity extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setRequestedOrientation(SCREEN_ORIENTATION_USER_PORTRAIT);
         setContentView(new GameView(this));
+    }
+
+    static int saveThis = 0;
+    final String SAVED_NUM = "NUMBER";
+    SharedPreferences sharedPreferences;
+
+    void saveData() {
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putInt(SAVED_NUM, Integer.parseInt(String.valueOf(saveThis)));
+        editor.apply();
+    }
+
+    void loadData() {
+        sharedPreferences = getPreferences(MODE_PRIVATE);
+        saveThis = sharedPreferences.getInt(SAVED_NUM, 0);
     }
 }

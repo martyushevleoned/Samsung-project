@@ -80,10 +80,10 @@ public class GameView extends View {
         die = MediaPlayer.create(cont, R.raw.sfx_die);
         hit = MediaPlayer.create(cont, R.raw.sfx_hit);
 
-        for (int i = 0; i < points.length;i++){
-            points[i]  = MediaPlayer.create(cont, R.raw.sfx_point);
+        for (int i = 0; i < points.length; i++) {
+            points[i] = MediaPlayer.create(cont, R.raw.sfx_point);
         }
-        for (int i = 0; i < wings.length;i++){
+        for (int i = 0; i < wings.length; i++) {
             wings[i] = MediaPlayer.create(cont, R.raw.sfx_wing);
         }
     }
@@ -172,6 +172,9 @@ public class GameView extends View {
                     (float) (resultY + ((results.getHeight() - medal.getHeight()) / 2)), p);
 
             if (score > maxScore) maxScore = score;
+            if (MainActivity.saveThis < maxScore) {
+                MainActivity.saveThis = maxScore;
+            }
 
             canvas.drawText("" + score, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 6 / 16), p);
             canvas.drawText("" + maxScore, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 13 / 16), p);
