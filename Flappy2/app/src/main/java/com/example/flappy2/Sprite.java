@@ -8,15 +8,13 @@ import android.graphics.Rect;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Sprite {
+class Sprite {
     private Bitmap bitmap;
 
     private List<Rect> frames;
     private int frameWidth;
     private int frameHeight;
-    private int currentFrame;
     private int g = 1;
-    private double frameTime;
     private double timeForCurrentFrame;
 
     private double x;
@@ -39,14 +37,10 @@ public class Sprite {
 
         this.bitmap = bitmap;
 
-        this.frames = new ArrayList<Rect>();
+        this.frames = new ArrayList<>();
         this.frames.add(initialFrame);
 
         this.bitmap = bitmap;
-
-        this.timeForCurrentFrame = 0.0;
-        this.frameTime = 50;
-        this.currentFrame = 0;
 
         this.frameWidth = initialFrame.width();
         this.frameHeight = initialFrame.height();
@@ -80,17 +74,7 @@ public class Sprite {
         frames.add(frame);
     }
 
-    private void setNextFrame() {
-        currentFrame += 1;
-        currentFrame %= frames.size();
-    }
-
-    void update(int ms, int stage) {
-        timeForCurrentFrame += ms;
-        if (timeForCurrentFrame >= frameTime) {
-            if (stage < 2) setNextFrame();
-            timeForCurrentFrame = timeForCurrentFrame - frameTime;
-        }
+    void update(int stage) {
         if (stage < 3) {
             vy += g;
             y = y + vy;
@@ -98,7 +82,7 @@ public class Sprite {
         x = x + vx;
     }
 
-    void draw(Canvas canvas) {
+    void draw(Canvas canvas, int stage) {
         Paint p = new Paint();
 
         double angle = vy / g * 2;
@@ -106,11 +90,19 @@ public class Sprite {
         canvas.rotate((int) angle, (float) (x + frameWidth / 2), (float) (y + frameHeight / 2));
 
         Rect destination = new Rect((int) x, (int) y, (int) (x + frameWidth), (int) (y + frameHeight));
-        canvas.drawBitmap(bitmap, frames.get(currentFrame), destination, p);
+
+        if (stage == 0)
+            canvas.drawBitmap(bitmap, frames.get(0), destination, p);
+        else {
+            if (vy < -2)
+                canvas.drawBitmap(bitmap, frames.get(2), destination, p);
+            if (vy >= -2 && vy <= 4)
+                canvas.drawBitmap(bitmap, frames.get(1), destination, p);
+            if (vy > 4)
+                canvas.drawBitmap(bitmap, frames.get(0), destination, p);
+        }
 
         canvas.rotate((int) -angle, (float) (x + frameWidth / 2), (float) (y + frameHeight / 2));
-
-        //drawHitBox(canvas);
     }
 
     double getVy() {

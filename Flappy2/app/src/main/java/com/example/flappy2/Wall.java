@@ -9,22 +9,20 @@ import java.util.Random;
 
 class Wall {
 
-    int emptySpace;
-    int height;
-    int width;
+    private int emptySpace = 575;
+    private int height;
+    private int width;
     int x;
-    int vx;
-    int indent;
-    Bitmap downTube;
-    Bitmap upTube;
-    int hTube;
-    int groundHeight;
+    private int vx;
+    private int indent;
+    private Bitmap downTube;
+    private Bitmap upTube;
+    private int hTube;
+    private int groundHeight;
 
     private int vy;
 
-    Wall(int emptySpace,
-         int height,
-         int width,
+    Wall(int width,
          int indent,
          int x,
          int vx,
@@ -37,8 +35,6 @@ class Wall {
         this.vx = vx;
         this.width = width;
         this.indent = indent;
-        this.height = height;
-        this.emptySpace = emptySpace;
         this.downTube = downTube;
         this.upTube = upTube;
         this.hTube = hTube;
