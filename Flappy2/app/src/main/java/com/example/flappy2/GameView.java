@@ -18,6 +18,8 @@ import java.util.Random;
 public class GameView extends View {
 
     private Sprite flappy;
+    private Numbers numbers;
+    private Numbers resultNumbers;
     Wall[] tube = new Wall[2];
     private Boolean point;
 
@@ -55,6 +57,8 @@ public class GameView extends View {
     Bitmap ground = BitmapFactory.decodeResource(getResources(), R.drawable.ground);
     Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
     Bitmap results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
+    Bitmap num = BitmapFactory.decodeResource(getResources(), R.drawable.numbers);
+    Bitmap smallNum = BitmapFactory.decodeResource(getResources(), R.drawable.smallnumbers);
 
     private final int vx = -10;
     private final int groundHeight = 300;
@@ -86,6 +90,28 @@ public class GameView extends View {
         load();
         MainActivity.loadData(cont);
 
+
+        //-------------------------------
+        int w = num.getWidth() / 10;
+        int h = num.getHeight();
+
+        Rect firstFrame = new Rect(0, 0, w, h);
+        numbers = new Numbers(0, 150, firstFrame, num);
+
+        for (int i = 1; i < 10; i++)
+            numbers.addFrame(new Rect(w * i, 0, w * (i + 1), h));
+
+        //-------------------------------
+        w = smallNum.getWidth() / 10;
+        h = smallNum.getHeight();
+
+        firstFrame = new Rect(0, 0, w, h);
+        resultNumbers = new Numbers(0, 150, firstFrame, smallNum);
+
+        for (int i = 1; i < 10; i++)
+            resultNumbers.addFrame(new Rect(w * i, 0, w * (i + 1), h));
+        //-------------------------------
+
         Timer t = new Timer();
         t.start();
     }
@@ -96,7 +122,7 @@ public class GameView extends View {
         if (stage >= 0) {
             drawFon(canvas);
             for (Wall wall : tube) wall.draw(canvas, getHeight());
-            if (stage == 0 || stage == 1 || stage == 2) drawScore(canvas, score);
+            drawScore(canvas, score);
             if (stage == 0) drawStart(canvas);
             flappy.draw(canvas, stage);
             drawGround(canvas);
@@ -192,7 +218,7 @@ public class GameView extends View {
         if (stage < -1) {
             stage++;
             if (stage == -1) {
-                timerInterval = 15;
+                timerInterval = 10;
                 tubeSpawn = getWidth() + 400;
 
                 tube[0] = new Wall(currentDownTube.getWidth(), 250, tubeSpawn + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
@@ -351,9 +377,13 @@ public class GameView extends View {
                     (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() / 3) - currentMedal.getWidth()),
                     (float) (resultY + ((results.getHeight() - currentMedal.getHeight()) / 2)), p);
 
-            canvas.drawText("" + score, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 6 / 16), p);
-            canvas.drawText("" + maxScore, (float) (((getWidth() - results.getWidth()) / 2) + (results.getWidth() * 2 / 3)), (float) (resultY + results.getHeight() * 13 / 16), p);
+            resultNumbers.setX((float) ((getWidth() - results.getWidth()) / 2 + (results.getWidth() * 2 / 3)));
+            resultNumbers.setY((float) (resultY + 100));
+            resultNumbers.draw(canvas, score);
 
+            resultNumbers.setX((float) ((getWidth() - results.getWidth()) / 2 + (results.getWidth() * 2 / 3)));
+            resultNumbers.setY((float) (resultY + results.getHeight() / 2 + 100));
+            resultNumbers.draw(canvas, maxScore);
         }
     }
 
@@ -365,21 +395,21 @@ public class GameView extends View {
             if (stage != 0)
                 groundX += vx;
         if (-groundX > ground.getWidth()) groundX += ground.getWidth();
-
     }
 
     protected void drawScore(Canvas canvas, int score) {
-        Paint p = new Paint();
-        p.setSubpixelText(true);
-        p.setColor(Color.WHITE);
-        p.setTextSize(150);
 
         if (score < 10)
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 50, 300, p);
-        else if (score < 100)
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 100, 300, p);
-        else
-            canvas.drawText("" + score, (float) (getWidth() / 2) - 150, 300, p);
+            numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth() / 2));
+        else {
+            if (score < 100) {
+                numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth()));
+            } else {
+                numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth() * 3 / 2));
+            }
+        }
+
+        numbers.draw(canvas, score);
     }
 
     protected void drawStart(Canvas canvas) {

@@ -15,7 +15,6 @@ class Sprite {
     private int frameWidth;
     private int frameHeight;
     private int g = 1;
-    private double timeForCurrentFrame;
 
     private double x;
     private double y;
@@ -70,6 +69,10 @@ class Sprite {
         this.vy = vy;
     }
 
+    double getVy() {
+        return vy;
+    }
+
     void addFrame(Rect frame) {
         frames.add(frame);
     }
@@ -103,9 +106,5 @@ class Sprite {
         }
 
         canvas.rotate((int) -angle, (float) (x + frameWidth / 2), (float) (y + frameHeight / 2));
-    }
-
-    double getVy() {
-        return vy;
     }
 }
