@@ -9,27 +9,26 @@ import java.util.Random;
 
 class Wall {
 
-    private int emptySpace = 575;
-    private int height;
-    private int width;
-    int x;
-    private int vx;
-    private int indent;
+    private float emptySpace = 575;
+    private float height;
+    private float width;
+    float x;
+    private float vx;
+    private float indent;
     private Bitmap downTube;
     private Bitmap upTube;
-    private int hTube;
-    private int groundHeight;
+    private float hTube;
+    private float groundHeight;
+    private float vy;
 
-    private int vy;
-
-    Wall(int width,
-         int indent,
-         int x,
-         int vx,
+    Wall(float width,
+         float indent,
+         float x,
+         float vx,
          Bitmap downTube,
          Bitmap upTube,
-         int hTube,
-         int groundHeight) {
+         float hTube,
+         float groundHeight) {
 
         this.x = x;
         this.vx = vx;
@@ -41,19 +40,19 @@ class Wall {
         this.groundHeight = groundHeight;
     }
 
-    int getX() {
+    float getX() {
         return x;
     }
 
-    int getEdge() {
+    float getEdge() {
         return x + width;
     }
 
-    int getUpTube() {
+    float getUpTube() {
         return height;
     }
 
-    int getDownTube() {
+    float getDownTube() {
         return height + emptySpace;
     }
 
@@ -66,7 +65,7 @@ class Wall {
         }
     }
 
-    void draw(Canvas canvas, int h) {
+    void draw(Canvas canvas) {
         Paint p = new Paint();
 
         canvas.drawBitmap(downTube, x, height + emptySpace, p);
@@ -79,7 +78,7 @@ class Wall {
         vy *= 2;
         vy -= 1;
         vy *= 2;
-        height = rnd.nextInt(h - indent - indent - emptySpace - groundHeight);
+        height = rnd.nextInt((int)(h - indent - indent - emptySpace - groundHeight));
         height += indent;
     }
 

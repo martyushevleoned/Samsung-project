@@ -12,20 +12,20 @@ class Sprite {
     private Bitmap bitmap;
 
     private List<Rect> frames;
-    private int frameWidth;
-    private int frameHeight;
-    private int g = 1;
+    private float frameWidth;
+    private float frameHeight;
+    private float g = 1;
 
-    private double x;
-    private double y;
+    private float x;
+    private float y;
 
-    private double vx;
-    private double vy;
+    private float vx;
+    private float vy;
 
-    Sprite(double x,
-           double y,
-           double vx,
-           double vy,
+    Sprite(float x,
+           float y,
+           float vx,
+           float vy,
            Rect initialFrame,
            Bitmap bitmap) {
 
@@ -45,31 +45,31 @@ class Sprite {
         this.frameHeight = initialFrame.height();
     }
 
-    double getX() {
+    float getX() {
         return x;
     }
 
-    double getY() {
+    float getY() {
         return y;
     }
 
-    void setY(double y) {
+    void setY(float y) {
         this.y = y;
     }
 
-    int getFrameWidth() {
+    float getFrameWidth() {
         return frameWidth;
     }
 
-    int getFrameHeight() {
+    float getFrameHeight() {
         return frameHeight;
     }
 
-    void setVy(double vy) {
+    void setVy(float vy) {
         this.vy = vy;
     }
 
-    double getVy() {
+    float getVy() {
         return vy;
     }
 
@@ -90,7 +90,7 @@ class Sprite {
 
         double angle = vy / g * 2;
 
-        canvas.rotate((int) angle, (float) (x + frameWidth / 2), (float) (y + frameHeight / 2));
+        canvas.rotate((int) angle, (int) (x + frameWidth / 2), (int) (y + frameHeight / 2));
 
         Rect destination = new Rect((int) x, (int) y, (int) (x + frameWidth), (int) (y + frameHeight));
 
@@ -105,6 +105,6 @@ class Sprite {
                 canvas.drawBitmap(bitmap, frames.get(0), destination, p);
         }
 
-        canvas.rotate((int) -angle, (float) (x + frameWidth / 2), (float) (y + frameHeight / 2));
+        canvas.rotate((int) -angle, (int) (x + frameWidth / 2), (int) (y + frameHeight / 2));
     }
 }

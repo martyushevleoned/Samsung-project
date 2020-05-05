@@ -12,14 +12,14 @@ class Numbers {
     private Bitmap bitmap;
 
     private List<Rect> frames;
-    private int frameWidth;
-    private int frameHeight;
+    private float frameWidth;
+    private float frameHeight;
 
-    private double x;
-    private double y;
+    private float x;
+    private float y;
 
-    Numbers(double x,
-            double y,
+    Numbers(float x,
+            float y,
             Rect initialFrame,
             Bitmap bitmap) {
 
@@ -37,15 +37,15 @@ class Numbers {
         this.frameHeight = initialFrame.height();
     }
 
-    void setY(double y) {
+    void setY(float y) {
         this.y = y;
     }
 
-    void setX(double x) {
+    void setX(float x) {
         this.x = x;
     }
 
-    int getFrameWidth() {
+    float getFrameWidth() {
         return frameWidth;
     }
 

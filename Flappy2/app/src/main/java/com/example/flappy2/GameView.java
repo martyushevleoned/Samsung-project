@@ -58,7 +58,7 @@ public class GameView extends View {
     Bitmap gameOver = BitmapFactory.decodeResource(getResources(), R.drawable.gameover);
     Bitmap results = BitmapFactory.decodeResource(getResources(), R.drawable.end);
     Bitmap num = BitmapFactory.decodeResource(getResources(), R.drawable.numbers);
-    Bitmap smallNum = BitmapFactory.decodeResource(getResources(), R.drawable.smallnumbers);
+    Bitmap smallNum = BitmapFactory.decodeResource(getResources(), R.drawable.smallnumbers2);
 
     private final int vx = -10;
     private final int groundHeight = 300;
@@ -121,7 +121,7 @@ public class GameView extends View {
         super.onDraw(canvas);
         if (stage >= 0) {
             drawFon(canvas);
-            for (Wall wall : tube) wall.draw(canvas, getHeight());
+            for (Wall wall : tube) wall.draw(canvas);
             drawScore(canvas, score);
             if (stage == 0) drawStart(canvas);
             flappy.draw(canvas, stage);
@@ -222,7 +222,7 @@ public class GameView extends View {
                 tubeSpawn = getWidth() + 400;
 
                 tube[0] = new Wall(currentDownTube.getWidth(), 250, tubeSpawn + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
-                tube[1] = new Wall(currentDownTube.getWidth(), 250, tubeSpawn * 3 / 2 + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
+                tube[1] = new Wall(currentDownTube.getWidth(), 250, (float)tubeSpawn * 3 / 2 + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
 
                 restart();
             }
@@ -327,7 +327,7 @@ public class GameView extends View {
         }
 
         tube[0].x = tubeSpawn + currentUpTube.getWidth();
-        tube[1].x = tubeSpawn * 3 / 2 + currentUpTube.getWidth();
+        tube[1].x = (float) tubeSpawn * 3 / 2 + currentUpTube.getWidth();
 
         int w = currentBird.getWidth() / 3;
         int h = currentBird.getHeight();
@@ -400,12 +400,12 @@ public class GameView extends View {
     protected void drawScore(Canvas canvas, int score) {
 
         if (score < 10)
-            numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth() / 2));
+            numbers.setX((int) (getWidth() / 2 - numbers.getFrameWidth() / 2));
         else {
             if (score < 100) {
-                numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth()));
+                numbers.setX((int) (getWidth() / 2 - numbers.getFrameWidth()));
             } else {
-                numbers.setX((float) (getWidth() / 2 - numbers.getFrameWidth() * 3 / 2));
+                numbers.setX((int) (getWidth() / 2 - numbers.getFrameWidth() * 3 / 2));
             }
         }
 
