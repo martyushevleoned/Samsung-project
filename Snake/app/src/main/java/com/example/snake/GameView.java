@@ -9,13 +9,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.LinkedList;
 import java.util.Random;
 
-public class GameView extends View {
+public class GameView extends View implements GestureDetector.OnGestureListener {
 
     Context cont;
 
@@ -328,5 +329,42 @@ public class GameView extends View {
         p.setTextSize(size);
         canvas.drawText("score: " + xm.size(), 10, getHeight() - size - 13, p);
         canvas.drawText("max score: " + MainActivity.maxScore, 10, getHeight() - 13, p);
+    }
+
+    //----------------------------------------------------------------------------------------------
+
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        vx = 1;
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+        vx = 1;
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        vx = 1;
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        vx = 1;
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+        vx = 1;
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        vx = 1;
+        return false;
     }
 }
