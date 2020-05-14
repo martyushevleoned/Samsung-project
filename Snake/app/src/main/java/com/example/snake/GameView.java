@@ -41,11 +41,12 @@ public class GameView extends View {
     Bitmap body_v = BitmapFactory.decodeResource(getResources(), R.drawable.body_up_and_down);
 
     Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+    Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
     Bitmap apple = BitmapFactory.decodeResource(getResources(), R.drawable.apple);
 
 
     private int timerInterval = 200;
-    private int stage = -3;
+    private int stage = -10;
     private int nx;
     private int ny;
     private int size = 75;
@@ -91,6 +92,9 @@ public class GameView extends View {
             drawApple(canvas);
             drawSnake(canvas);
             drawScore(canvas);
+        } else {
+            canvas.drawARGB(255, 0, 0, 0);
+            canvas.drawBitmap(logo, (float) (getWidth() - logo.getWidth()) / 2, (float) (getHeight() - logo.getHeight()) / 2, p);
         }
     }
 

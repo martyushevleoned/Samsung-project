@@ -9,9 +9,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Window;
-
-import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER_PORTRAIT;
+import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
         setContentView(new GameView(this));
     }
