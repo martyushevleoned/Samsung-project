@@ -10,6 +10,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.FrameLayout;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER_LANDSCAPE);
-        setContentView(new GameView(this));
+        setContentView(R.layout.activity_main);
+        ((FrameLayout) findViewById(R.id.idFlame)).addView(new GameView(this));
     }
 
     static int maxScore = 0;

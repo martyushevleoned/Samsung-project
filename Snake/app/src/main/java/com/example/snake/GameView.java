@@ -9,13 +9,14 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.LinkedList;
 import java.util.Random;
 
-public class GameView extends View{
+public class GameView extends View implements GestureDetector.OnGestureListener {
 
     Context cont;
 
@@ -41,12 +42,11 @@ public class GameView extends View{
     Bitmap body_v = BitmapFactory.decodeResource(getResources(), R.drawable.body_up_and_down);
 
     Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
-    Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
     Bitmap apple = BitmapFactory.decodeResource(getResources(), R.drawable.apple);
 
 
     private int timerInterval = 200;
-    private int stage = -10;
+    private int stage = -3;
     private int nx;
     private int ny;
     private int size = 75;
@@ -92,9 +92,6 @@ public class GameView extends View{
             drawApple(canvas);
             drawSnake(canvas);
             drawScore(canvas);
-        } else {
-            canvas.drawARGB(255, 0, 0, 0);
-            canvas.drawBitmap(logo, (float) (getWidth() - logo.getWidth()) / 2, (float) (getHeight() - logo.getHeight()) / 2, p);
         }
     }
 
@@ -328,5 +325,35 @@ public class GameView extends View{
         p.setTextSize(size);
         canvas.drawText("score: " + xm.size(), 10, getHeight() - size - 13, p);
         canvas.drawText("max score: " + MainActivity.maxScore, 10, getHeight() - 13, p);
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        return false;
     }
 }
