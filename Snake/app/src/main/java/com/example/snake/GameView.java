@@ -1,6 +1,5 @@
 package com.example.snake;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -9,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
-import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.LinkedList;
@@ -54,27 +52,20 @@ public class GameView extends View {
     public static int vy = 0;
     public static int activeVx = 0;
     public static int activeVy = 0;
-    private int headX = 0;
-    private int headY = 0;
-    private int appleX = 0;
-    private int appleY = 0;
-
-    /*
-     * stage
-     * -3 -1 - skip first frames
-     * 0 - skip spawn
-     * 1- game play
-     * */
+    private int headX = -1;
+    private int headY = -1;
+    private int appleX = -2;
+    private int appleY = -2;
 
     public GameView(Context context) {
         super(context);
         cont = context;
         p.setAntiAlias(true);
 
-        xm.add(headX);
-        xm.add(headX);
-        ym.add(headY);
-        ym.add(headY);
+        xm.add(-2);
+        xm.add(-2);
+        ym.add(-2);
+        ym.add(-2);
 
         turn.add(true);
         turn.add(true);
@@ -85,74 +76,6 @@ public class GameView extends View {
 
         Timer t = new Timer();
         t.start();
-    }
-
-    @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (stage > 0) {
-            drawTable(canvas);
-            drawApple(canvas);
-            drawSnake(canvas);
-            drawScore(canvas);
-        } else {
-            vx = 0;
-            vy = 0;
-            canvas.drawARGB(255, 0, 0, 0);
-            canvas.drawBitmap(logo, (float) (getWidth() - logo.getWidth()) / 2, (float) (getHeight() - logo.getHeight()) / 2, p);
-        }
-    }
-
-    protected void update() {
-
-
-        for (int i = xm.size() - 1; i > 0; i--) {
-            xm.set(i, xm.get(i - 1));
-            ym.set(i, ym.get(i - 1));
-            turn.set(i, turn.get(i - 1));
-        }
-
-        xm.set(0, headX);
-        ym.set(0, headY);
-
-        if (vy == 0)
-            turn.set(0, true);
-        else
-            turn.set(0, false);
-
-        headX += vx;
-        headY += vy;
-
-        activeVx = vx;
-        activeVy = vy;
-
-        if (headX == -1) headX = nx - 1;
-        if (headY == -1) headY = ny - 1;
-        if (headX == nx) headX = 0;
-        if (headY == ny) headY = 0;
-
-        if (stage >= 0)
-            appleSpawn();
-
-        crashSnake();
-
-        if (stage < -1) {
-            stage++;
-            if (stage == -1) {
-                nx = getWidth() / size;
-                ny = getHeight() / size;
-
-                headX = nx / 2;
-                headY = ny / 2;
-
-                appleX = headX;
-                appleY = headY;
-
-                stage = 0;
-            }
-        }
-
-        invalidate();
     }
 
     class Timer extends CountDownTimer {
@@ -170,12 +93,155 @@ public class GameView extends View {
         }
     }
 
+    protected void update() {
+
+        if (stage < -1) {
+            stage++;
+            if (stage == -1) {
+                nx = getWidth() / size;
+                ny = getHeight() / size;
+
+                headX = nx / 2;
+                headY = ny / 2;
+
+                appleX = headX;
+                appleY = headY;
+
+                spawn();
+
+                stage = 0;
+            }
+        } else {
+
+            for (int i = xm.size() - 1; i > 0; i--) {
+                xm.set(i, xm.get(i - 1));
+                ym.set(i, ym.get(i - 1));
+                turn.set(i, turn.get(i - 1));
+            }
+
+            xm.set(0, headX);
+            ym.set(0, headY);
+
+            if (vy == 0)
+                turn.set(0, true);
+            else
+                turn.set(0, false);
+
+            headX += vx;
+            headY += vy;
+
+            activeVx = vx;
+            activeVy = vy;
+
+            if (headX == -1) headX = nx - 1;
+            if (headY == -1) headY = ny - 1;
+            if (headX == nx) headX = 0;
+            if (headY == ny) headY = 0;
+
+            appleSpawn();
+
+            crash();
+        }
+
+        invalidate();
+    }
+
+    protected void appleSpawn() {
+        if (headX == appleX && headY == appleY) {
+
+            spawn();
+
+            xm.add(xm.get(xm.size() - 1));
+            ym.add(ym.get(ym.size() - 1));
+
+            turn.add(turn.get(turn.size() - 1));
+
+            hrum.start();
+        }
+    }
+
+    protected void spawn() {
+
+        Random rnd = new Random();
+        boolean out;
+        do {
+            out = true;
+
+            appleX = rnd.nextInt(nx);
+            appleY = rnd.nextInt(ny);
+
+            for (int i = 0; i < xm.size(); i++) {
+                if (appleX == xm.get(i) && appleY == ym.get(i)) out = false;
+            }
+            if (appleX == headX && appleY == headY) out = false;
+
+
+        } while (!out);
+
+    }
+
+    protected void crash() {
+        boolean crash;
+        crash = false;
+
+        if (vx != 0 || vy != 0)
+            for (int i = 0; i < xm.size(); i++) {
+                if (headX == xm.get(i) && headY == ym.get(i)) {
+                    crash = true;
+                }
+            }
+
+        if (crash) {
+
+            if (MainActivity.maxScore < xm.size()) {
+                MainActivity.maxScore = xm.size();
+                MainActivity.saveData(cont);
+            }
+
+            xm.clear();
+            ym.clear();
+
+
+            headX = nx / 2;
+            headY = ny / 2;
+
+            spawn();
+
+            vx = 0;
+            vy = 0;
+
+            xm.add(-2);
+            xm.add(-2);
+            ym.add(-2);
+            ym.add(-2);
+
+            turn.add(true);
+            turn.add(true);
+        }
+    }
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (stage >= 0) {
+            drawTable(canvas);
+            drawApple(canvas);
+            drawSnake(canvas);
+            drawScore(canvas);
+        } else {
+            vx = 0;
+            vy = 0;
+            canvas.drawARGB(255, 0, 0, 0);
+            canvas.drawBitmap(logo, (float) (getWidth() - logo.getWidth()) / 2, (float) (getHeight() - logo.getHeight()) / 2, p);
+        }
+    }
+
     protected void drawTable(Canvas canvas) {
 
         p.setARGB(255, 0, 0, 0);
-        canvas.drawBitmap(background, (float) (getWidth() - background.getWidth()) / 2,(float) (getHeight() - background.getHeight()) / 2, p);
+        canvas.drawBitmap(background, (float) (getWidth() - background.getWidth()) / 2, (float) (getHeight() - background.getHeight()) / 2, p);
 
-        p.setARGB(50, 0, 0, 0);
+        p.setARGB(40, 0, 0, 0);
 
         for (int i = 0; i < nx; i++)
             canvas.drawLine((float) getWidth() * i / nx, 0, (float) getWidth() * i / nx, getHeight(), p);
@@ -216,75 +282,6 @@ public class GameView extends View {
     protected void drawApple(Canvas canvas) {
         p.setColor(Color.RED);
         canvas.drawBitmap(apple, (float) getWidth() * appleX / nx, (float) getHeight() * appleY / ny, p);
-    }
-
-    protected void appleSpawn() {
-        if (headX == appleX && headY == appleY) {
-            Random rnd = new Random();
-
-            boolean out;
-
-            do {
-                out = true;
-
-                appleX = rnd.nextInt(nx);
-                appleY = rnd.nextInt(ny);
-
-                for (int i = 0; i < xm.size(); i++) {
-                    if (appleX == xm.get(i) && appleY == ym.get(i)) out = false;
-                }
-                if (appleX == headX && appleY == headY) out = false;
-
-
-            } while (!out);
-
-            xm.add(xm.get(xm.size() - 2));
-            ym.add(ym.get(ym.size() - 2));
-
-            turn.add(turn.get(turn.size() - 1));
-
-            stage = 1;
-
-            hrum.start();
-        }
-    }
-
-    protected void crashSnake() {
-        boolean crash;
-        crash = false;
-
-        for (int i = 0; i < xm.size(); i++) {
-            if (headX == xm.get(i) && headY == ym.get(i)) {
-                crash = true;
-            }
-        }
-
-        if (crash) {
-
-            if (MainActivity.maxScore < xm.size()) {
-                MainActivity.maxScore = xm.size();
-                MainActivity.saveData(cont);
-            }
-
-            xm.clear();
-            ym.clear();
-
-
-            headX = nx / 2;
-            headY = ny / 2;
-
-            vx = 0;
-            vy = 0;
-
-            xm.add(headX);
-            xm.add(headX);
-
-            ym.add(headY);
-            ym.add(headY);
-
-            turn.add(true);
-            turn.add(true);
-        }
     }
 
     protected void drawScore(Canvas canvas) {
