@@ -47,7 +47,7 @@ public class GameView extends View {
     private int stage = -10;
     private int nx;
     private int ny;
-    private int size = 75;
+    private int size = body_h.getWidth();
     public static int vx = 0;
     public static int vy = 0;
     public static int activeVx = 0;
