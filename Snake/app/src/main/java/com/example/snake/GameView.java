@@ -9,14 +9,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.MediaPlayer;
 import android.os.CountDownTimer;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
 import java.util.LinkedList;
 import java.util.Random;
 
-public class GameView extends View implements GestureDetector.OnGestureListener {
+public class GameView extends View {
 
     Context cont;
 
@@ -43,22 +42,22 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
 
     Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
     Bitmap apple = BitmapFactory.decodeResource(getResources(), R.drawable.apple);
+    Bitmap logo = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
 
 
     private int timerInterval = 200;
-    private int stage = -3;
+    private int stage = -10;
     private int nx;
     private int ny;
     private int size = 75;
-    private int vx = 0;
-    private int vy = 0;
-    private int activeVx = 0;
-    private int activeVy = 0;
+    public static int vx = 0;
+    public static int vy = 0;
+    public static int activeVx = 0;
+    public static int activeVy = 0;
     private int headX = 0;
     private int headY = 0;
     private int appleX = 0;
     private int appleY = 0;
-    private double k = 0;
 
     /*
      * stage
@@ -92,6 +91,11 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
             drawApple(canvas);
             drawSnake(canvas);
             drawScore(canvas);
+        } else {
+            vx = 0;
+            vy = 0;
+            canvas.drawARGB(255, 0, 0, 0);
+            canvas.drawBitmap(logo, (float) (getWidth() - logo.getWidth()) / 2, (float) (getHeight() - logo.getHeight()) / 2, p);
         }
     }
 
@@ -140,49 +144,11 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
                 appleX = headX;
                 appleY = headY;
 
-                k = (double) getHeight() / getWidth();
                 stage = 0;
             }
         }
 
         invalidate();
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-        int eventAction = event.getAction();
-        if (eventAction == MotionEvent.ACTION_DOWN) {
-            double tapX = event.getX();
-            double tapY = event.getY();
-
-            if (tapY > k * tapX)
-                if (tapY > -k * tapX + getHeight()) {
-                    if (activeVy != -1) {
-                        vx = 0;
-                        vy = 1;
-                    }
-                } else {
-                    if (activeVx != 1) {
-                        vx = -1;
-                        vy = 0;
-                    }
-                }
-            else if (tapY > -k * tapX + getHeight()) {
-                if (activeVx != -1) {
-                    vx = 1;
-                    vy = 0;
-                }
-            } else {
-                if (activeVy != 1) {
-                    vx = 0;
-                    vy = -1;
-                }
-            }
-
-        }
-        return true;
     }
 
     class Timer extends CountDownTimer {
@@ -207,9 +173,6 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
 
         p.setARGB(50, 0, 0, 0);
 
-        canvas.drawLine(0, 0, getWidth(), getHeight(), p);
-        canvas.drawLine(getWidth(), 0, 0, getHeight(), p);
-
         for (int i = 0; i < nx; i++)
             canvas.drawLine((float) getWidth() * i / nx, 0, (float) getWidth() * i / nx, getHeight(), p);
         for (int i = 0; i < ny; i++)
@@ -218,7 +181,7 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
 
     protected void drawSnake(Canvas canvas) {
 
-        for (int i = 0; i < xm.size(); i++) {
+        for (int i = xm.size() - 1; i >= 0; i--) {
             if (turn.get(i))
                 canvas.drawBitmap(body_h, (float) getWidth() * xm.get(i) / nx, (float) getHeight() * ym.get(i) / ny, p);
             else
@@ -271,8 +234,8 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
 
             } while (!out);
 
-            xm.add(xm.get(xm.size() - 1));
-            ym.add(ym.get(ym.size() - 1));
+            xm.add(xm.get(xm.size() - 2));
+            ym.add(ym.get(ym.size() - 2));
 
             turn.add(turn.get(turn.size() - 1));
 
@@ -323,37 +286,7 @@ public class GameView extends View implements GestureDetector.OnGestureListener 
     protected void drawScore(Canvas canvas) {
         p.setARGB(150, 255, 255, 255);
         p.setTextSize(size);
-        canvas.drawText("score: " + xm.size(), 10, getHeight() - size - 13, p);
-        canvas.drawText("max score: " + MainActivity.maxScore, 10, getHeight() - 13, p);
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        return false;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        return false;
+        canvas.drawText("score: " + (xm.size() - 2), 10, getHeight() - size - 13, p);
+        canvas.drawText("max score: " + (MainActivity.maxScore - 2), 10, getHeight() - 13, p);
     }
 }
