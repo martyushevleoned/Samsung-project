@@ -72,7 +72,11 @@ public class GameView extends View {
         p.setAntiAlias(true);
 
         xm.add(headX);
+        xm.add(headX);
         ym.add(headY);
+        ym.add(headY);
+
+        turn.add(true);
         turn.add(true);
 
         hrum = MediaPlayer.create(cont, R.raw.apple_sound);
