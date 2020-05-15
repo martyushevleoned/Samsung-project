@@ -173,7 +173,7 @@ public class GameView extends View {
     protected void drawTable(Canvas canvas) {
 
         p.setARGB(255, 0, 0, 0);
-        canvas.drawBitmap(background, 0, 0, p);
+        canvas.drawBitmap(background, (float) (getWidth() - background.getWidth()) / 2,(float) (getHeight() - background.getHeight()) / 2, p);
 
         p.setARGB(50, 0, 0, 0);
 
