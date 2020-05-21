@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         gd.setOnDoubleTapListener(this);
     }
 
-    static int maxScore = 0;
+    static int maxScore = 2;
     static String SAVED_NUM = "NUMBER";
     static SharedPreferences sharedPreferences;
 
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     static void loadData(Context context) {
         sharedPreferences = context.getSharedPreferences(SAVED_NUM, MODE_PRIVATE);
-        maxScore = sharedPreferences.getInt(SAVED_NUM, 0);
+        maxScore = sharedPreferences.getInt(SAVED_NUM, 2);
     }
     //==============================================================================================
 

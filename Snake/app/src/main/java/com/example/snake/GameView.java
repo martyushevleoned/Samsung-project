@@ -45,8 +45,8 @@ public class GameView extends View {
 
     private int timerInterval = 200;
     private int stage = -10;
-    private int nx;
-    private int ny;
+    private int nx = 1;
+    private int ny = 1;
     private int size = body_h.getWidth() - 3;
     public static int vx = 0;
     public static int vy = 0;
@@ -151,10 +151,14 @@ public class GameView extends View {
 
             spawn();
 
-            xm.add(xm.get(xm.size() - 1));
-            ym.add(ym.get(ym.size() - 1));
+            if (nx * ny - 5 > xm.size()) {
 
-            turn.add(turn.get(turn.size() - 1));
+                xm.add(xm.get(xm.size() - 1));
+                ym.add(ym.get(ym.size() - 1));
+
+                turn.add(turn.get(turn.size() - 1));
+
+            }
 
             hrum.start();
         }
@@ -177,7 +181,6 @@ public class GameView extends View {
 
 
         } while (!out);
-
     }
 
     protected void crash() {
