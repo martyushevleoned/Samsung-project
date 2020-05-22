@@ -10,12 +10,20 @@ import android.graphics.Paint;
 import android.os.CountDownTimer;
 import android.view.View;
 
+import java.util.Random;
+
 @SuppressLint("ViewConstructor")
 public class GameView extends View {
 
     Context cont;
 
-    Bitmap block = BitmapFactory.decodeResource(getResources(), R.drawable.square3);
+    Bitmap block1 = BitmapFactory.decodeResource(getResources(), R.drawable.firstblock);
+    Bitmap block2 = BitmapFactory.decodeResource(getResources(), R.drawable.secondblock);
+    Bitmap block3 = BitmapFactory.decodeResource(getResources(), R.drawable.thirdblock);
+    Bitmap block4 = BitmapFactory.decodeResource(getResources(), R.drawable.fourthblock);
+    Bitmap block5 = BitmapFactory.decodeResource(getResources(), R.drawable.fifthblock);
+
+    Bitmap currentBlock;
 
     Paint p = new Paint();
 
@@ -23,8 +31,8 @@ public class GameView extends View {
     private int counter = 0;
     private int width;
     private int height;
-    private int menu = block.getWidth() * 4;
-    private int size = block.getWidth() + 10;
+    private int menu = 100;
+    private int size = block1.getWidth() + 10;
     public static int timerInterval = 30;
     public static int h;
     public static int w = 10;
@@ -32,6 +40,11 @@ public class GameView extends View {
     public static int mainBlockY = -1;
     public static int direction = 0;
     public static int shapeNum = 0;
+
+    private Bitmap[] futureColors;
+    public static int[] futureShapes;
+
+    private Bitmap[] block = {block1, block2, block3, block4, block5};
     public static int[][] area;
     public static int[][][][] shape = {
             {
@@ -104,7 +117,7 @@ public class GameView extends View {
             drawMatrix(canvas);
 
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-                drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i]);
+                drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i], currentBlock);
             }
 
         } else {
@@ -127,7 +140,7 @@ public class GameView extends View {
 
                 area = new int[w][h];
 
-                mainBlockX = w / 2 - 1;
+                newShape();
                 stage = 0;
             }
         } else {
@@ -186,10 +199,22 @@ public class GameView extends View {
         }
 
         if (t) {
+
+            int n = 0;
+
+
+            for (int i = 0; i < block.length; i++) {
+                if (block[i].equals(currentBlock)) {
+                    n = i + 1;
+                    break;
+                }
+            }
+
+
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
                 if (mainBlockY + shape[shapeNum][direction][1][i] < h)
                     if (mainBlockX + shape[shapeNum][direction][0][i] < h && mainBlockY + shape[shapeNum][direction][1][i] >= 0)
-                        area[mainBlockX + shape[shapeNum][direction][0][i]][mainBlockY + shape[shapeNum][direction][1][i]] = 1;
+                        area[mainBlockX + shape[shapeNum][direction][0][i]][mainBlockY + shape[shapeNum][direction][1][i]] = n;
             }
 
             deleteLayer();
@@ -216,17 +241,20 @@ public class GameView extends View {
             }
         }
 
+        Random rnd = new Random();
+
+        currentBlock = block[rnd.nextInt(block.length)];
+
         timerInterval = 50;
-        shapeNum++;
-        shapeNum %= shape.length;
+        shapeNum = rnd.nextInt(shape.length);
         direction = 0;
         mainBlockY = -4;
         mainBlockX = w / 2 - 1;
     }
 
-    protected void drawPix(Canvas canvas, int x, int y) {
+    protected void drawPix(Canvas canvas, int x, int y, Bitmap b) {
         if (y < h && y >= 0)
-            canvas.drawBitmap(block, 4 + (float) width * x / w, 4 + (float) height * y / h, p);
+            canvas.drawBitmap(b, 4 + (float) width * x / w, 4 + (float) height * y / h, p);
     }
 
     protected void drawMatrix(Canvas canvas) {
@@ -234,7 +262,10 @@ public class GameView extends View {
         for (int i = 0; i < area.length; i++) {
             for (int j = 0; j < area[i].length; j++) {
                 if (area[i][j] != 0)
-                    drawPix(canvas, i, j);
+
+                    drawPix(canvas, i, j, block[area[i][j] - 1]);
+
+
             }
         }
     }
@@ -247,13 +278,13 @@ public class GameView extends View {
         p.setColor(Color.BLUE);
         canvas.drawRect(width, 0, getWidth(), getHeight(), p);
 
-        p.setColor(Color.WHITE);
-        for (int i = 0; i <= w; i++) {
-            canvas.drawLine((float) width * i / w, 0, (float) width * i / w, height, p);
-        }
-        for (int i = 0; i <= h; i++) {
-            canvas.drawLine(0, (float) height * i / h, width, (float) height * i / h, p);
-        }
+//        p.setColor(Color.WHITE);
+//        for (int i = 0; i <= w; i++) {
+//            canvas.drawLine((float) width * i / w, 0, (float) width * i / w, height, p);
+//        }
+//        for (int i = 0; i <= h; i++) {
+//            canvas.drawLine(0, (float) height * i / h, width, (float) height * i / h, p);
+//        }
     }
 
     public static boolean rightCheck(int x, int y) {
