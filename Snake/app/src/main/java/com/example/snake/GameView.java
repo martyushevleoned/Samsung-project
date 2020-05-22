@@ -13,6 +13,7 @@ import android.view.View;
 import java.util.LinkedList;
 import java.util.Random;
 
+
 public class GameView extends View {
 
     Context cont;
@@ -44,9 +45,9 @@ public class GameView extends View {
 
 
     private int timerInterval = 200;
-    private int stage = -10;
-    private int nx = 1;
-    private int ny = 1;
+    private int stage = -5;
+    private int nx = 5;
+    private int ny = 5;
     private int size = body_h.getWidth() - 3;
     public static int vx = 0;
     public static int vy = 0;
@@ -96,7 +97,10 @@ public class GameView extends View {
     protected void update() {
 
         if (stage < -1) {
-            stage++;
+
+            if (getWidth() != 0.0f && getHeight() != 0.0f)
+                stage++;
+
             if (stage == -1) {
                 nx = getWidth() / size;
                 ny = getHeight() / size;

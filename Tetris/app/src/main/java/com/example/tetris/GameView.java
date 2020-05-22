@@ -2,6 +2,8 @@ package com.example.tetris;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,10 +15,13 @@ public class GameView extends View {
 
     Context cont;
 
+    Bitmap block = BitmapFactory.decodeResource(getResources(), R.drawable.square3);
+
     Paint p = new Paint();
 
     private int stage = -10;
     private int counter = 0;
+    private int size = block.getWidth() + 10;
     public static int timerInterval = 50;
     public static int h;
     public static int w = 10;
@@ -91,16 +96,15 @@ public class GameView extends View {
         super.onDraw(canvas);
         if (stage >= 0) {
 
+            canvas.drawColor(Color.DKGRAY);
+
             drawMatrix(canvas);
 
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-                p.setColor(Color.GREEN);
                 drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i]);
             }
-            p.setColor(Color.RED);
-            drawPix(canvas, mainBlockX, mainBlockY);
 
-            drawTable(canvas);
+//            drawTable(canvas);
 
         } else {
             canvas.drawARGB(255, 0, 0, 0);
@@ -113,8 +117,8 @@ public class GameView extends View {
             stage++;
             if (stage == -1) {
 
-                h = getHeight();
-                h /= ((double) getWidth() / w);
+                h = getHeight() / size;
+                w = getWidth() / size;
 
                 area = new int[w][h];
 
@@ -211,18 +215,16 @@ public class GameView extends View {
         shapeNum++;
         shapeNum %= shape.length;
         direction = 0;
-        mainBlockY = 0;
+        mainBlockY = -4;
         mainBlockX = w / 2 - 1;
     }
 
     protected void drawPix(Canvas canvas, int x, int y) {
         if (y < h && y >= 0)
-            canvas.drawRect((float) getWidth() * x / w, (float) getHeight() * y / h, (float) getWidth() * (x + 1) / w, (float) getHeight() * (y + 1) / h, p);
+            canvas.drawBitmap(block, 4 + (float) getWidth() * x / w, 4 + (float) getHeight() * y / h, p);
     }
 
     protected void drawMatrix(Canvas canvas) {
-
-        p.setColor(Color.BLUE);
 
         for (int i = 0; i < area.length; i++) {
             for (int j = 0; j < area[i].length; j++) {
@@ -257,6 +259,13 @@ public class GameView extends View {
             if (x == 1)
                 return true;
             else return area[x - 1][y] == 0;
+        else
+            return false;
+    }
+
+    public static boolean rotateCheck(int x, int y) {
+        if (x >= 0 && x < w)
+            return area[x][y] == 0;
         else
             return false;
     }

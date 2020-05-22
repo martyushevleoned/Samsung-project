@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     void right() {
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-            if (!GameView.rightCheck(mainBlockX + shape[shapeNum][direction][0][i],mainBlockY + shape[shapeNum][direction][1][i])) {
+            if (!GameView.rightCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
                 t = false;
                 break;
             }
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     void left() {
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-            if (!GameView.leftCheck(mainBlockX + shape[shapeNum][direction][0][i],mainBlockY + shape[shapeNum][direction][1][i])) {
+            if (!GameView.leftCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
                 t = false;
                 break;
             }
@@ -85,8 +85,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     void up() {
-        direction++;
-        direction %= shape[shapeNum].length;
     }
 
     void down() {
@@ -138,6 +136,23 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
+        boolean t = true;
+
+        int d = direction + 1;
+        d %= shape[shapeNum].length;
+
+        for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
+            if (!GameView.rotateCheck(mainBlockX + shape[shapeNum][d][0][i], mainBlockY + shape[shapeNum][d][1][i])) {
+                t = false;
+                break;
+            }
+        }
+
+        if (t) {
+            direction++;
+            direction %= shape[shapeNum].length;
+        }
+
         return false;
     }
 
