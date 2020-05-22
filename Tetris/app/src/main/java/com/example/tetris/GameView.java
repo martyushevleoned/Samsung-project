@@ -21,8 +21,11 @@ public class GameView extends View {
 
     private int stage = -10;
     private int counter = 0;
+    private int width;
+    private int height;
+    private int menu = block.getWidth() * 4;
     private int size = block.getWidth() + 10;
-    public static int timerInterval = 50;
+    public static int timerInterval = 30;
     public static int h;
     public static int w = 10;
     public static int mainBlockX;
@@ -96,15 +99,13 @@ public class GameView extends View {
         super.onDraw(canvas);
         if (stage >= 0) {
 
-            canvas.drawColor(Color.DKGRAY);
+            drawTable(canvas);
 
             drawMatrix(canvas);
 
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
                 drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i]);
             }
-
-//            drawTable(canvas);
 
         } else {
             canvas.drawARGB(255, 0, 0, 0);
@@ -114,11 +115,15 @@ public class GameView extends View {
     protected void update() {
 
         if (stage < -1) {
-            stage++;
+            if (getWidth() != 0 && getHeight() != 0)
+                stage++;
             if (stage == -1) {
 
-                h = getHeight() / size;
-                w = getWidth() / size;
+                width = getWidth() - menu;
+                height = getHeight();
+
+                w = width / size;
+                h = height / size;
 
                 area = new int[w][h];
 
@@ -133,7 +138,7 @@ public class GameView extends View {
 
             }
             counter++;
-            counter %= 6;
+            counter %= 10;
 
 
         }
@@ -221,7 +226,7 @@ public class GameView extends View {
 
     protected void drawPix(Canvas canvas, int x, int y) {
         if (y < h && y >= 0)
-            canvas.drawBitmap(block, 4 + (float) getWidth() * x / w, 4 + (float) getHeight() * y / h, p);
+            canvas.drawBitmap(block, 4 + (float) width * x / w, 4 + (float) height * y / h, p);
     }
 
     protected void drawMatrix(Canvas canvas) {
@@ -235,12 +240,19 @@ public class GameView extends View {
     }
 
     protected void drawTable(Canvas canvas) {
-        p.setColor(Color.BLACK);
+
+        p.setColor(Color.DKGRAY);
+        canvas.drawRect(0, 0, width, getHeight(), p);
+
+        p.setColor(Color.BLUE);
+        canvas.drawRect(width, 0, getWidth(), getHeight(), p);
+
+        p.setColor(Color.WHITE);
         for (int i = 0; i <= w; i++) {
-            canvas.drawLine((float) getWidth() * i / w, 0, (float) getWidth() * i / w, getHeight(), p);
+            canvas.drawLine((float) width * i / w, 0, (float) width * i / w, height, p);
         }
         for (int i = 0; i <= h; i++) {
-            canvas.drawLine(0, (float) getHeight() * i / h, getWidth(), (float) getHeight() * i / h, p);
+            canvas.drawLine(0, (float) height * i / h, width, (float) height * i / h, p);
         }
     }
 
@@ -264,7 +276,7 @@ public class GameView extends View {
     }
 
     public static boolean rotateCheck(int x, int y) {
-        if (x >= 0 && x < w)
+        if (x >= 0 && x < w && y >= 0)
             return area[x][y] == 0;
         else
             return false;

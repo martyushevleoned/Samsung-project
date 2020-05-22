@@ -216,13 +216,14 @@ public class GameView extends View {
 
         //-----------------------------------SKIP-FIRST-FRAME-----------------------------------
         if (stage < -1) {
-            stage++;
+            if (getWidth() != 0 && getHeight() != 0)
+                stage++;
             if (stage == -1) {
                 timerInterval = 10;
                 tubeSpawn = getWidth() + 400;
 
                 tube[0] = new Wall(currentDownTube.getWidth(), 250, tubeSpawn + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
-                tube[1] = new Wall(currentDownTube.getWidth(), 250, (float)tubeSpawn * 3 / 2 + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
+                tube[1] = new Wall(currentDownTube.getWidth(), 250, (float) tubeSpawn * 3 / 2 + currentUpTube.getWidth(), vx, currentDownTube, currentUpTube, currentUpTube.getHeight(), groundHeight);
 
                 restart();
             }
