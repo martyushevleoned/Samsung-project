@@ -98,7 +98,7 @@ public class GameView extends View {
 
         if (stage < -1) {
 
-            if (getWidth() != 0.0f && getHeight() != 0.0f)
+            if (getWidth() != 0 && getHeight() != 0)
                 stage++;
 
             if (stage == -1) {
