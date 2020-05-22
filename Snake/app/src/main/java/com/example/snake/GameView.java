@@ -45,7 +45,7 @@ public class GameView extends View {
 
 
     private int timerInterval = 200;
-    private int stage = -5;
+    private int stage = -10;
     private int nx = 5;
     private int ny = 5;
     private int size = body_h.getWidth() - 3;
