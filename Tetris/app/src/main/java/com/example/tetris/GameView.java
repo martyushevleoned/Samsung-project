@@ -15,7 +15,8 @@ import java.util.Random;
 @SuppressLint("ViewConstructor")
 public class GameView extends View {
 
-    Context cont;
+    @SuppressLint("StaticFieldLeak")
+    static Context cont;
 
     Bitmap block1 = BitmapFactory.decodeResource(getResources(), R.drawable.purple_block);
     Bitmap block2 = BitmapFactory.decodeResource(getResources(), R.drawable.dkblu_block);
@@ -39,15 +40,16 @@ public class GameView extends View {
 
     Paint p = new Paint();
 
-    private int stage = -10;
+
     private int width;
     private int height;
     private int menu = (smallBlock1.getWidth() + 5) * 5;
     private int size = block1.getWidth() + 10;
     private int hei;
-    private int score = 0;
     private int[] futureShapes;
 
+    public static int score = 0;
+    public static int stage = -10;
     public static int counter = 0;
     public static int timerInterval = 25;
     public static int h;
@@ -72,10 +74,10 @@ public class GameView extends View {
                     {{0, -1, 1, -1}, {0, 0, 0, -1}}
             },
             {
-                    {{1, 1, 1, 0}, {0, -1, 1, -1}},
-                    {{1, 2, 0, 2}, {0, 0, 0, -1}},
-                    {{1, 1, 1, 2}, {0, -1, 1, 1}},
-                    {{1, 2, 0, 0}, {0, 0, 0, 1}}
+                    {{0, 0, 0, -1}, {0, -1, 1, -1}},
+                    {{0, 1, -1, 1}, {0, 0, 0, -1}},
+                    {{0, 0, 0, 1}, {0, -1, 1, 1}},
+                    {{0, 1, -1, -1}, {0, 0, 0, 1}}
             },
             {
                     {{0, 0, 1, -1}, {0, -1, -1, 0}},
@@ -98,6 +100,8 @@ public class GameView extends View {
         super(context);
         cont = context;
         p.setAntiAlias(true);
+        p.setTextSize(size);
+        MainActivity.loadData(context);
 
         Timer t = new Timer();
         t.start();
@@ -137,7 +141,7 @@ public class GameView extends View {
                 drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i], currentBlock);
             }
 
-
+            drawScore(canvas);
 
         } else {
             canvas.drawARGB(255, 0, 0, 0);
@@ -172,15 +176,17 @@ public class GameView extends View {
                 stage = 0;
             }
         } else {
+            if (stage != 1) {
+                if (counter == 0) {
 
-            if (counter == 0) {
+                    stopCheck();
 
-                stopCheck();
+                }
+                counter++;
+                counter %= 10;
 
+                crashCheck();
             }
-            counter++;
-            counter %= 10;
-
 
         }
         invalidate();
@@ -205,8 +211,9 @@ public class GameView extends View {
                     for (int j = 0; j < w; j++) {
                         area[j][j1] = area[j][j1 - 1];
                     }
-                }
 
+                }
+                score++;
             }
         }
     }
@@ -253,7 +260,7 @@ public class GameView extends View {
             mainBlockY++;
     }
 
-    protected void newShape() {
+    protected void crashCheck() {
         boolean t = false;
         for (int[] ints : area) {
             if (ints[0] != 0) {
@@ -263,13 +270,11 @@ public class GameView extends View {
         }
 
         if (t) {
-            for (int i = 0; i < w; i++) {
-                for (int j = 0; j < h; j++) {
-                    area[i][j] = 0;
-                }
-            }
-            score = 0;
+            stage = 1;
         }
+    }
+
+    protected void newShape() {
 
         Random rnd = new Random();
 
@@ -282,7 +287,7 @@ public class GameView extends View {
         timerInterval = 50;
         direction = 0;
         mainBlockY = -4;
-        mainBlockX = w / 2 - 1;
+        mainBlockX = w / 2;
     }
 
     protected void drawPix(Canvas canvas, int x, int y, Bitmap b) {
@@ -318,7 +323,7 @@ public class GameView extends View {
 
         for (int j = 0; j < futureShapes.length; j++)
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-                drawMenuPix(canvas, 2 + shape[futureShapes[j]][0][0][i], 4 + 5 * j + shape[futureShapes[j]][0][1][i], smallBlock[futureShapes[j]]);
+                drawMenuPix(canvas, 2 + shape[futureShapes[j]][0][0][i], 3 + 5 * j + shape[futureShapes[j]][0][1][i], smallBlock[futureShapes[j]]);
             }
     }
 
@@ -342,6 +347,38 @@ public class GameView extends View {
 //        }
     }
 
+    protected void drawScore(Canvas canvas) {
+        p.setARGB(255, 0, 0, 0);
+        canvas.drawText("score", width + 3, getHeight() - size - 7, p);
+        canvas.drawText("" + score, width + 3, getHeight() - 7, p);
+
+        p.setARGB(255, 255, 255, 255);
+        if (stage == 1) {
+            if (MainActivity.maxScore < score)
+                canvas.drawText("New record: " + score, (float) width / 2 - 220, (float) getHeight() / 2, p);
+            canvas.drawText("Tap to restart", (float) width / 2 - 225, (float) getHeight() / 2 + size, p);
+        }
+    }
+
+    public static boolean restart() {
+
+        for (int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                area[i][j] = 0;
+            }
+        }
+
+        if (score > MainActivity.maxScore) {
+            MainActivity.maxScore = score;
+            MainActivity.saveData(cont);
+        }
+
+        stage = 0;
+        score = 0;
+
+        return false;
+    }
+
     public static boolean rightCheck(int x, int y) {
 
         if (x < w - 1)
@@ -356,7 +393,7 @@ public class GameView extends View {
         if (x > 0)
             if (x == 1)
                 return true;
-            else return area[x - 1][y] == 0;
+            else return area[x - 1][0] == 0;
         else
             return false;
     }

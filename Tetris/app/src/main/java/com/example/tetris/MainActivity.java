@@ -19,7 +19,8 @@ import static com.example.tetris.GameView.mainBlockX;
 import static com.example.tetris.GameView.mainBlockY;
 import static com.example.tetris.GameView.shape;
 import static com.example.tetris.GameView.shapeNum;
-import static com.example.tetris.GameView.timerInterval;
+import static com.example.tetris.GameView.stage;
+import static com.example.tetris.GameView.counter;
 
 public class MainActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GestureDetector.OnDoubleTapListener {
 
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     void right() {
-        GameView.counter = 1;
+        counter = 1;
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
             if (!GameView.rightCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     void left() {
-        GameView.counter = 1;
+        counter = 1;
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
             if (!GameView.leftCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
@@ -137,22 +138,26 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        GameView.counter = 1;
-        boolean t = true;
+        if (stage == 1) {
+            GameView.restart();
+        } else {
+            GameView.counter = 1;
+            boolean t = true;
 
-        int d = direction + 1;
-        d %= shape[shapeNum].length;
+            int d = direction + 1;
+            d %= shape[shapeNum].length;
 
-        for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
-            if (!GameView.rotateCheck(mainBlockX + shape[shapeNum][d][0][i], mainBlockY + shape[shapeNum][d][1][i])) {
-                t = false;
-                break;
+            for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
+                if (!GameView.rotateCheck(mainBlockX + shape[shapeNum][d][0][i], mainBlockY + shape[shapeNum][d][1][i])) {
+                    t = false;
+                    break;
+                }
             }
-        }
 
-        if (t) {
-            direction++;
-            direction %= shape[shapeNum].length;
+            if (t) {
+                direction++;
+                direction %= shape[shapeNum].length;
+            }
         }
         return false;
     }
