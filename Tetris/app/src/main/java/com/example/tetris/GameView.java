@@ -17,23 +17,39 @@ public class GameView extends View {
 
     Context cont;
 
-    Bitmap block1 = BitmapFactory.decodeResource(getResources(), R.drawable.firstblock);
-    Bitmap block2 = BitmapFactory.decodeResource(getResources(), R.drawable.secondblock);
-    Bitmap block3 = BitmapFactory.decodeResource(getResources(), R.drawable.thirdblock);
-    Bitmap block4 = BitmapFactory.decodeResource(getResources(), R.drawable.fourthblock);
-    Bitmap block5 = BitmapFactory.decodeResource(getResources(), R.drawable.fifthblock);
-
+    Bitmap block1 = BitmapFactory.decodeResource(getResources(), R.drawable.purple_block);
+    Bitmap block2 = BitmapFactory.decodeResource(getResources(), R.drawable.dkblu_block);
+    Bitmap block3 = BitmapFactory.decodeResource(getResources(), R.drawable.orange_block);
+    Bitmap block4 = BitmapFactory.decodeResource(getResources(), R.drawable.green_block);
+    Bitmap block5 = BitmapFactory.decodeResource(getResources(), R.drawable.red_block);
+    Bitmap block6 = BitmapFactory.decodeResource(getResources(), R.drawable.ltblu_block);
+    Bitmap block7 = BitmapFactory.decodeResource(getResources(), R.drawable.yelow_block);
     Bitmap currentBlock;
+    Bitmap smallBlock1 = BitmapFactory.decodeResource(getResources(), R.drawable.purpleblock);
+    Bitmap smallBlock2 = BitmapFactory.decodeResource(getResources(), R.drawable.dkblublock);
+    Bitmap smallBlock3 = BitmapFactory.decodeResource(getResources(), R.drawable.orangeblock);
+    Bitmap smallBlock4 = BitmapFactory.decodeResource(getResources(), R.drawable.greenblock);
+    Bitmap smallBlock5 = BitmapFactory.decodeResource(getResources(), R.drawable.redblock);
+    Bitmap smallBlock6 = BitmapFactory.decodeResource(getResources(), R.drawable.ltblublock);
+    Bitmap smallBlock7 = BitmapFactory.decodeResource(getResources(), R.drawable.yelowblock);
+    Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+
+    private Bitmap[] block = {block1, block2, block3, block4, block5, block6, block7};
+    private Bitmap[] smallBlock = {smallBlock1, smallBlock2, smallBlock3, smallBlock4, smallBlock5, smallBlock6, smallBlock7};
 
     Paint p = new Paint();
 
     private int stage = -10;
-    private int counter = 0;
     private int width;
     private int height;
-    private int menu = 100;
+    private int menu = (smallBlock1.getWidth() + 5) * 5;
     private int size = block1.getWidth() + 10;
-    public static int timerInterval = 30;
+    private int hei;
+    private int score = 0;
+    private int[] futureShapes;
+
+    public static int counter = 0;
+    public static int timerInterval = 25;
     public static int h;
     public static int w = 10;
     public static int mainBlockX;
@@ -41,10 +57,6 @@ public class GameView extends View {
     public static int direction = 0;
     public static int shapeNum = 0;
 
-    private Bitmap[] futureColors;
-    public static int[] futureShapes;
-
-    private Bitmap[] block = {block1, block2, block3, block4, block5};
     public static int[][] area;
     public static int[][][][] shape = {
             {
@@ -60,10 +72,10 @@ public class GameView extends View {
                     {{0, -1, 1, -1}, {0, 0, 0, -1}}
             },
             {
-                    {{0, 0, 0, -1}, {0, -1, 1, -1}},
-                    {{0, 1, -1, 1}, {0, 0, 0, -1}},
-                    {{0, 0, 0, 1}, {0, -1, 1, 1}},
-                    {{0, 1, -1, -1}, {0, 0, 0, 1}}
+                    {{1, 1, 1, 0}, {0, -1, 1, -1}},
+                    {{1, 2, 0, 2}, {0, 0, 0, -1}},
+                    {{1, 1, 1, 2}, {0, -1, 1, 1}},
+                    {{1, 2, 0, 0}, {0, 0, 0, 1}}
             },
             {
                     {{0, 0, 1, -1}, {0, -1, -1, 0}},
@@ -74,7 +86,7 @@ public class GameView extends View {
                     {{0, 1, 1, 0}, {0, 0, -1, 1}}
             },
             {
-                    {{0, 0, 0, 0}, {0, -1, 1, 2}},
+                    {{0, 0, 0, 0}, {0, -1, 1, -2}},
                     {{0, -1, 1, 2}, {0, 0, 0, 0}}
             },
             {
@@ -98,7 +110,10 @@ public class GameView extends View {
 
         @Override
         public void onTick(long millisUntilFinished) {
+
             update();
+
+
         }
 
         @Override
@@ -116,9 +131,13 @@ public class GameView extends View {
 
             drawMatrix(canvas);
 
+            drawMenu(canvas);
+
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
                 drawPix(canvas, mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i], currentBlock);
             }
+
+
 
         } else {
             canvas.drawARGB(255, 0, 0, 0);
@@ -138,7 +157,16 @@ public class GameView extends View {
                 w = width / size;
                 h = height / size;
 
+                hei = getHeight() / (menu / 5);
+
                 area = new int[w][h];
+
+                Random rnd = new Random();
+
+                futureShapes = new int[3];
+
+                for (int i = 0; i < futureShapes.length; i++)
+                    futureShapes[i] = rnd.nextInt(block.length);
 
                 newShape();
                 stage = 0;
@@ -178,6 +206,7 @@ public class GameView extends View {
                         area[j][j1] = area[j][j1 - 1];
                     }
                 }
+
             }
         }
     }
@@ -239,14 +268,18 @@ public class GameView extends View {
                     area[i][j] = 0;
                 }
             }
+            score = 0;
         }
 
         Random rnd = new Random();
 
-        currentBlock = block[rnd.nextInt(block.length)];
+        currentBlock = block[futureShapes[0]];
+        shapeNum = futureShapes[0];
 
+        System.arraycopy(futureShapes, 1, futureShapes, 0, futureShapes.length - 1);
+
+        futureShapes[futureShapes.length - 1] = rnd.nextInt(block.length);
         timerInterval = 50;
-        shapeNum = rnd.nextInt(shape.length);
         direction = 0;
         mainBlockY = -4;
         mainBlockX = w / 2 - 1;
@@ -254,7 +287,11 @@ public class GameView extends View {
 
     protected void drawPix(Canvas canvas, int x, int y, Bitmap b) {
         if (y < h && y >= 0)
-            canvas.drawBitmap(b, 4 + (float) width * x / w, 4 + (float) height * y / h, p);
+            canvas.drawBitmap(b, 5 + (float) width * x / w, 5 + (float) height * y / h, p);
+    }
+
+    protected void drawMenuPix(Canvas canvas, int x, int y, Bitmap b) {
+        canvas.drawBitmap(b, 5 + width + (float) menu * x / 5, 5 + (float) getHeight() * y / hei, p);
     }
 
     protected void drawMatrix(Canvas canvas) {
@@ -262,21 +299,39 @@ public class GameView extends View {
         for (int i = 0; i < area.length; i++) {
             for (int j = 0; j < area[i].length; j++) {
                 if (area[i][j] != 0)
-
                     drawPix(canvas, i, j, block[area[i][j] - 1]);
-
-
             }
         }
     }
 
+    protected void drawMenu(Canvas canvas) {
+
+//        p.setColor(Color.WHITE);
+//        for (int i = 0; i <= 5; i++) {
+//            canvas.drawLine(width + (float) menu * i / 5, 0, width + (float) menu * i / 5, getHeight(), p);
+//        }
+//
+//        for (int i = 0; i <= hei; i++) {
+//            canvas.drawLine(width, (float) getHeight() * i / hei, getWidth(), (float) getHeight() * i / hei, p);
+//
+//        }
+
+        for (int j = 0; j < futureShapes.length; j++)
+            for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
+                drawMenuPix(canvas, 2 + shape[futureShapes[j]][0][0][i], 4 + 5 * j + shape[futureShapes[j]][0][1][i], smallBlock[futureShapes[j]]);
+            }
+    }
+
     protected void drawTable(Canvas canvas) {
 
-        p.setColor(Color.DKGRAY);
+        p.setColor(Color.BLACK);
         canvas.drawRect(0, 0, width, getHeight(), p);
 
-        p.setColor(Color.BLUE);
+        p.setColor(Color.DKGRAY);
         canvas.drawRect(width, 0, getWidth(), getHeight(), p);
+
+
+        canvas.drawBitmap(background, width - background.getWidth(), getHeight() - background.getHeight(), p);
 
 //        p.setColor(Color.WHITE);
 //        for (int i = 0; i <= w; i++) {
@@ -307,7 +362,7 @@ public class GameView extends View {
     }
 
     public static boolean rotateCheck(int x, int y) {
-        if (x >= 0 && x < w && y >= 0)
+        if (x >= 0 && x < w && y >= 0 && y < h)
             return area[x][y] == 0;
         else
             return false;
