@@ -236,21 +236,10 @@ public class GameView extends View {
 
         if (t) {
 
-            int n = 0;
-
-
-            for (int i = 0; i < block.length; i++) {
-                if (block[i].equals(currentBlock)) {
-                    n = i + 1;
-                    break;
-                }
-            }
-
-
             for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
                 if (mainBlockY + shape[shapeNum][direction][1][i] < h)
                     if (mainBlockX + shape[shapeNum][direction][0][i] < h && mainBlockY + shape[shapeNum][direction][1][i] >= 0)
-                        area[mainBlockX + shape[shapeNum][direction][0][i]][mainBlockY + shape[shapeNum][direction][1][i]] = n;
+                        area[mainBlockX + shape[shapeNum][direction][0][i]][mainBlockY + shape[shapeNum][direction][1][i]] = shapeNum + 1;
             }
 
             deleteLayer();
@@ -334,7 +323,6 @@ public class GameView extends View {
 
         p.setColor(Color.DKGRAY);
         canvas.drawRect(width, 0, getWidth(), getHeight(), p);
-
 
         canvas.drawBitmap(background, width - background.getWidth(), getHeight() - background.getHeight(), p);
 
