@@ -381,7 +381,7 @@ public class GameView extends View {
         if (x > 0)
             if (x == 1)
                 return true;
-            else return area[x - 1][0] == 0;
+            else return area[x - 1][y] == 0;
         else
             return false;
     }
