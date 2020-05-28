@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     void right() {
-        counter = 1;
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
             if (!GameView.rightCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
@@ -70,12 +69,13 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 break;
             }
         }
-        if (t)
+        if (t) {
+            counter = 1;
             mainBlockX++;
+        }
     }
 
     void left() {
-        counter = 1;
         boolean t = true;
         for (int i = 0; i < shape[shapeNum][direction][0].length; i++) {
             if (!GameView.leftCheck(mainBlockX + shape[shapeNum][direction][0][i], mainBlockY + shape[shapeNum][direction][1][i])) {
@@ -83,8 +83,10 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
                 break;
             }
         }
-        if (t)
+        if (t) {
+            counter = 1;
             mainBlockX--;
+        }
     }
 
     void up() {
@@ -141,7 +143,6 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
         if (stage == 1) {
             GameView.restart();
         } else {
-            GameView.counter = 1;
             boolean t = true;
 
             int d = direction + 1;
@@ -155,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements GestureDetector.O
             }
 
             if (t) {
+                counter = 1;
                 direction++;
                 direction %= shape[shapeNum].length;
             }

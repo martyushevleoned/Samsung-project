@@ -17,7 +17,7 @@ import java.util.Random;
 
 public class GameView extends View {
 
-    private Sprite flappy;
+    private Sprite bird;
     private Numbers numbers;
     private Numbers resultNumbers;
     Wall[] tube = new Wall[2];
@@ -124,7 +124,7 @@ public class GameView extends View {
             for (Wall wall : tube) wall.draw(canvas);
             drawScore(canvas, score);
             if (stage == 0) drawStart(canvas);
-            flappy.draw(canvas, stage);
+            bird.draw(canvas, stage);
             drawGround(canvas);
             drawResults(canvas);
         }
@@ -135,7 +135,7 @@ public class GameView extends View {
         if (stage == 1 || stage == 2) {
 
             //-----------------------------------UPDATE-----------------------------------
-            flappy.update(stage);
+            bird.update(stage);
 
             if (stage == 1)
                 for (Wall wall : tube)
@@ -144,22 +144,22 @@ public class GameView extends View {
             //-----------------------------------POINT-----------------------------------
             int error = 15;
 
-            if (flappy.getX() + error > tube[0].getEdge() && !point) {
+            if (bird.getX() + error > tube[0].getEdge() && !point) {
                 point = true;
                 score++;
                 soundPlay(points[0]);
             }
 
-            if (flappy.getX() + error > tube[1].getEdge() && point) {
+            if (bird.getX() + error > tube[1].getEdge() && point) {
                 point = false;
                 score++;
                 soundPlay(points[1]);
             }
 
             //-----------------------------------HIT-----------------------------------
-            if (flappy.getY() + flappy.getFrameHeight() > getHeight() - groundHeight) {
+            if (bird.getY() + bird.getFrameHeight() > getHeight() - groundHeight) {
 
-                flappy.setY(getHeight() - flappy.getFrameHeight() - groundHeight);
+                bird.setY(getHeight() - bird.getFrameHeight() - groundHeight);
                 resultY = getHeight();
                 stage = 3;
 
@@ -188,27 +188,27 @@ public class GameView extends View {
 
             //-----------------------------------CHECK-----------------------------------
             if (stage == 1) {
-                if (lose(flappy.getX() + error, flappy.getY())) {
+                if (lose(bird.getX() + error, bird.getY())) {
                     stage = 2;
-                    flappy.setVy(flappy.getVy() + 5);
+                    bird.setVy(bird.getVy() + 5);
                     soundPlay(die);
                 }
                 if (stage != 2)
-                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY())) {
+                    if (lose(bird.getX() + bird.getFrameWidth() - error, bird.getY())) {
                         stage = 2;
-                        flappy.setVy(flappy.getVy() + 5);
+                        bird.setVy(bird.getVy() + 5);
                         soundPlay(die);
                     }
                 if (stage != 2)
-                    if (lose(flappy.getX() + error, flappy.getY() + flappy.getFrameHeight())) {
+                    if (lose(bird.getX() + error, bird.getY() + bird.getFrameHeight())) {
                         stage = 2;
-                        flappy.setVy(flappy.getVy() + 5);
+                        bird.setVy(bird.getVy() + 5);
                         soundPlay(die);
                     }
                 if (stage != 2)
-                    if (lose(flappy.getX() + flappy.getFrameWidth() - error, flappy.getY() + flappy.getFrameHeight())) {
+                    if (lose(bird.getX() + bird.getFrameWidth() - error, bird.getY() + bird.getFrameHeight())) {
                         stage = 2;
-                        flappy.setVy(flappy.getVy() + 5);
+                        bird.setVy(bird.getVy() + 5);
                         soundPlay(die);
                     }
             }
@@ -241,7 +241,7 @@ public class GameView extends View {
 
             //-----------------------------------FLY-----------------------------------
             if (stage == 0 || stage == 1) {
-                flappy.setVy(-25);
+                bird.setVy(-25);
                 stage = 1;
                 soundPlay(wings[wingCounter]);
                 wingCounter++;
@@ -328,9 +328,9 @@ public class GameView extends View {
         int h = currentBird.getHeight();
 
         Rect firstFrame = new Rect(0, 0, w, h);
-        flappy = new Sprite(200, (float) (getHeight() / 2 + 100), 0, 0, firstFrame, currentBird);
-        flappy.addFrame(new Rect(w, 0, w * 2, h));
-        flappy.addFrame(new Rect(w * 2, 0, w * 3, h));
+        bird = new Sprite(200, (float) (getHeight() / 2 + 100), 0, 0, firstFrame, currentBird);
+        bird.addFrame(new Rect(w, 0, w * 2, h));
+        bird.addFrame(new Rect(w * 2, 0, w * 3, h));
 
         for (Wall wall : tube) {
             wall.generate(getHeight());

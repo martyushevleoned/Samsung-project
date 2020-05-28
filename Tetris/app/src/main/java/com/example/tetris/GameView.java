@@ -33,7 +33,7 @@ public class GameView extends View {
     Bitmap smallBlock5 = BitmapFactory.decodeResource(getResources(), R.drawable.redblock);
     Bitmap smallBlock6 = BitmapFactory.decodeResource(getResources(), R.drawable.ltblublock);
     Bitmap smallBlock7 = BitmapFactory.decodeResource(getResources(), R.drawable.yelowblock);
-    Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg);
+    Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.bg3);
 
     private Bitmap[] block = {block1, block2, block3, block4, block5, block6, block7};
     private Bitmap[] smallBlock = {smallBlock1, smallBlock2, smallBlock3, smallBlock4, smallBlock5, smallBlock6, smallBlock7};
