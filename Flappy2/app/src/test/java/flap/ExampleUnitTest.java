@@ -1,4 +1,4 @@
-package com.example.flappy2;
+package flap;
 
 import org.junit.Test;
 
